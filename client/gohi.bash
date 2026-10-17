@@ -102,8 +102,8 @@ _gohi_set_prompt
 trap '_gohi_preexec' DEBUG
 PROMPT_COMMAND="_gohi_precmd${PROMPT_COMMAND:+; $PROMPT_COMMAND}"
 
-# Manual launch alias & function for the daemon
+# Manual launch function for the daemon
+unalias hello 2>/dev/null
 hello() {
     "$GOHI_DIR/client/gohi-ctl" start
 }
-alias hello="$GOHI_DIR/client/gohi-ctl start"

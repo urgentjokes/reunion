@@ -22,7 +22,6 @@ echo "✔ Linked gohi-ctl into $LOCAL_BIN/gohi-ctl"
 
 # 3. Add to ~/.zshrc
 GOHI_SOURCE_LINE="[ -f \"$DIR/client/gohi.zsh\" ] && source \"$DIR/client/gohi.zsh\""
-GOHI_ALIAS_LINE="alias hello=\"$LOCAL_BIN/gohi-ctl start\""
 if [ -f "$ZSHRC" ]; then
     if ! grep -q "gohi.zsh" "$ZSHRC"; then
         echo "" >> "$ZSHRC"
@@ -30,15 +29,10 @@ if [ -f "$ZSHRC" ]; then
         echo "$GOHI_SOURCE_LINE" >> "$ZSHRC"
         echo "✔ Added go/hi hook to $ZSHRC"
     fi
-    if ! grep -q "alias hello=" "$ZSHRC"; then
-        echo "$GOHI_ALIAS_LINE" >> "$ZSHRC"
-        echo "✔ Added alias hello to $ZSHRC"
-    fi
 else
     echo "# go/hi Terminal Logging Mechanism" > "$ZSHRC"
     echo "$GOHI_SOURCE_LINE" >> "$ZSHRC"
-    echo "$GOHI_ALIAS_LINE" >> "$ZSHRC"
-    echo "✔ Created $ZSHRC with go/hi hook and alias hello"
+    echo "✔ Created $ZSHRC with go/hi hook"
 fi
 
 # 4. Optional bash support
@@ -47,8 +41,7 @@ if [ -f "$BASHRC" ]; then
         echo "" >> "$BASHRC"
         echo "# go/hi Terminal Logging Mechanism" >> "$BASHRC"
         echo "[ -f \"$DIR/client/gohi.bash\" ] && source \"$DIR/client/gohi.bash\"" >> "$BASHRC"
-        echo "alias hello=\"$LOCAL_BIN/gohi-ctl start\"" >> "$BASHRC"
-        echo "✔ Added go/hi hook and alias hello to $BASHRC"
+        echo "✔ Added go/hi hook to $BASHRC"
     fi
 fi
 

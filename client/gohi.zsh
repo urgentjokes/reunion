@@ -119,8 +119,8 @@ _gohi_set_prompt
 add-zsh-hook preexec _gohi_preexec
 add-zsh-hook precmd _gohi_precmd
 
-# Manual launch alias & function for the daemon
+# Manual launch function for the daemon
+unalias hello 2>/dev/null
 hello() {
     "$GOHI_DIR/client/gohi-ctl" start
 }
-alias hello="$GOHI_DIR/client/gohi-ctl start"
