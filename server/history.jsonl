@@ -1,0 +1,2 @@
+{"command": "ls -la /Users/davefriedman2023", "time": "2026-10-17 16:19:10", "duration": "0.024s", "exit_code": 0, "id": "1792279149762"}
+{"command": "cat missing_file.txt", "time": "2026-10-17 16:19:15", "duration": "0.010s", "exit_code": 1, "id": "1792279149770"}

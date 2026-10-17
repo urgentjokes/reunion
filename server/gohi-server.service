@@ -1,0 +1,16 @@
+[Unit]
+Description=go/hi Raspberry Pi Logging Server
+After=network.target
+
+[Service]
+Type=simple
+User=bokkun
+WorkingDirectory=/home/bokkun/go-hi/server
+ExecStart=/usr/bin/python3 /home/bokkun/go-hi/server/server.py --port 8080
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

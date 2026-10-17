@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hello–I’m Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient: radial-gradient(circle at 15% 15%, #181c24 0%, #0d1117 60%, #090d13 100%);
+      --card-bg: rgba(22, 27, 34, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --accent: #58a6ff;
+      --accent-glow: rgba(88, 166, 255, 0.25);
+      --success: #3fb950;
+      --success-bg: rgba(63, 185, 80, 0.15);
+      --error: #f85149;
+      --error-bg: rgba(248, 81, 73, 0.15);
+      --text-main: #f0f6fc;
+      --text-muted: #8b949e;
+      --row-hover: rgba(88, 166, 255, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      background-attachment: fixed;
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 2.5rem 2rem;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--card-border);
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #1f6feb 0%, #a371f7 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 16px rgba(31, 111, 235, 0.35);
+      font-size: 1.35rem;
+    }
+
+    h1 {
+      font-size: 1.85rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      background: linear-gradient(120deg, #ffffff 30%, #a5d6ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .search-input {
+      background: rgba(13, 17, 23, 0.8);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      min-width: 260px;
+      transition: all 0.2s ease;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .live-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 0.5rem 0.85rem;
+      border-radius: 9999px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th {
+      background: rgba(13, 17, 23, 0.7);
+      padding: 1rem 1.25rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--card-border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    th.th-command { width: 50%; }
+    th.th-time { width: 22%; }
+    th.th-duration { width: 14%; }
+    th.th-error { width: 14%; text-align: center; }
+
+    td {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--card-border);
+      font-size: 0.92rem;
+      vertical-align: middle;
+      transition: background-color 0.15s ease;
+    }
+
+    tbody tr:hover td {
+      background-color: var(--row-hover);
+    }
+
+    .command-cell {
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+      font-size: 0.9rem;
+      word-break: break-all;
+    }
+
+    .command-link {
+      color: var(--accent);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: pointer;
+      padding: 0.25rem 0.5rem;
+      margin: -0.25rem -0.5rem;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .command-link:hover {
+      background: rgba(88, 166, 255, 0.12);
+      text-decoration: underline;
+    }
+
+    .command-link .copy-icon {
+      opacity: 0;
+      font-size: 0.8rem;
+      transition: opacity 0.2s ease;
+    }
+
+    .command-link:hover .copy-icon {
+      opacity: 1;
+    }
+
+    .time-cell {
+      color: var(--text-muted);
+      white-space: nowrap;
+      font-size: 0.88rem;
+    }
+
+    .duration-cell {
+      color: var(--text-main);
+      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+      font-size: 0.88rem;
+      white-space: nowrap;
+    }
+
+    .error-cell {
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.2rem 0.65rem;
+      border-radius: 9999px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .badge-success {
+      background: var(--success-bg);
+      color: var(--success);
+      border: 1px solid rgba(63, 185, 80, 0.3);
+    }
+
+    .badge-error {
+      background: var(--error-bg);
+      color: var(--error);
+      border: 1px solid rgba(248, 81, 73, 0.3);
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #1f6feb;
+      color: #fff;
+      padding: 0.8rem 1.25rem;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    footer {
+      margin-top: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="brand-icon">🏠</div>
+        <div>
+          <h1>Hello–I’m Home</h1>
+        </div>
+      </div>
+      <div class="header-controls">
+        <input 
+          type="text" 
+          id="searchInput" 
+          class="search-input" 
+          placeholder="Filter commands..." 
+          oninput="filterRows()"
+        />
+        <div class="live-status">
+          <div class="status-dot"></div>
+          <span id="entryCount">0 entries</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="card">
+      <div class="table-container">
+        <table id="logTable">
+          <thead>
+            <tr>
+              <th class="th-command">Command</th>
+              <th class="th-time">Time</th>
+              <th class="th-duration">Duration</th>
+              <th class="th-error">Error code</th>
+            </tr>
+          </thead>
+          <tbody id="logBody">
+<!-- GOHI_ENTRIES_START -->
+<!-- GOHI_ENTRIES_END -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <footer>
+      <span>go/hi · Terminal Interaction Monitor</span>
+      <span>Living at 192.168.0.40</span>
+    </footer>
+  </div>
+
+  <div id="toast" class="toast">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+      <path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/>
+    </svg>
+    <span id="toastMsg">Command copied to clipboard!</span>
+  </div>
+
+  <script>
+    function copyCommand(element, event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      const cmdText = element.getAttribute('data-command') || element.innerText.trim();
+      if (!cmdText) return;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(cmdText).then(() => {
+          showToast(`Copied: "${cmdText}"`);
+        }).catch(err => {
+          fallbackCopy(cmdText);
+        });
+      } else {
+        fallbackCopy(cmdText);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.opacity = "0";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        showToast(`Copied: "${text}"`);
+      } catch (err) {
+        showToast("Failed to copy");
+      }
+      document.body.removeChild(textArea);
+    }
+
+    let toastTimer = null;
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      toastMsg.textContent = msg;
+      toast.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+
+    function updateEntryCount() {
+      const rows = document.querySelectorAll('#logBody tr.log-row');
+      const countSpan = document.getElementById('entryCount');
+      if (countSpan) {
+        countSpan.textContent = `${rows.length} ${rows.length === 1 ? 'entry' : 'entries'}`;
+      }
+    }
+
+    function filterRows() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const rows = document.querySelectorAll('#logBody tr.log-row');
+      rows.forEach(row => {
+        const cmd = row.querySelector('.command-cell')?.innerText.toLowerCase() || '';
+        const time = row.querySelector('.time-cell')?.innerText.toLowerCase() || '';
+        if (cmd.includes(query) || time.includes(query)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+
+    // Auto-update support when connected to server
+    function pollRecentEntries() {
+      fetch('/api/recent')
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data) && data.length > 0) {
+            let added = false;
+            const logBody = document.getElementById('logBody');
+            data.forEach(entry => {
+              const existing = document.querySelector(`tr[data-id="${entry.id}"]`);
+              if (!existing) {
+                const tr = createRowElement(entry);
+                logBody.insertBefore(tr, logBody.firstChild);
+                added = true;
+              }
+            });
+            if (added) {
+              updateEntryCount();
+              filterRows();
+            }
+          }
+        })
+        .catch(() => {
+          // Silent catch for static file inspection
+        });
+    }
+
+    function createRowElement(entry) {
+      const tr = document.createElement('tr');
+      tr.className = 'log-row';
+      if (entry.id) tr.setAttribute('data-id', entry.id);
+
+      const isSuccess = String(entry.exit_code) === '0';
+      const badgeClass = isSuccess ? 'badge-success' : 'badge-error';
+
+      tr.innerHTML = `
+        <td class="command-cell">
+          <a href="#" class="command-link" onclick="copyCommand(this, event)" data-command="${escapeHtml(entry.command)}">
+            <span>${escapeHtml(entry.command)}</span>
+            <span class="copy-icon">📋</span>
+          </a>
+        </td>
+        <td class="time-cell">${escapeHtml(entry.time)}</td>
+        <td class="duration-cell">${escapeHtml(entry.duration)}</td>
+        <td class="error-cell">
+          <span class="badge ${badgeClass}">${escapeHtml(String(entry.exit_code))}</span>
+        </td>
+      `;
+      return tr;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      updateEntryCount();
+      if (window.location.protocol.startsWith('http')) {
+        setInterval(pollRecentEntries, 2000);
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+#!/usr/bin/env python3
+"""
+go/hi Control Utility
+Allows checking daemon status, testing connectivity to the Raspberry Pi,
+and managing the background process.
+"""
+
+import sys
+import os
+import json
+import urllib.request
+import subprocess
+
+GOHI_DIR = os.path.expanduser("~/.gohi")
+PID_FILE = os.path.join(GOHI_DIR, "daemon.pid")
+SPOOL_FILE = os.path.join(GOHI_DIR, "spool.log")
+PENDING_FILE = os.path.join(GOHI_DIR, "pending.log")
+PI_HOST = os.environ.get("GOHI_HOST", "192.168.0.40")
+PI_PORT = int(os.environ.get("GOHI_PORT", "8080"))
+
+def get_daemon_pid():
+    if os.path.exists(PID_FILE):
+        try:
+            with open(PID_FILE, "r") as f:
+                pid = int(f.read().strip())
+            os.kill(pid, 0)
+            return pid
+        except (OSError, ValueError):
+            return None
+    return None
+
+def status():
+    pid = get_daemon_pid()
+    print("=== go/hi Status ===")
+    if pid:
+        print(f"● Daemon: RUNNING (PID {pid})")
+    else:
+        print("○ Daemon: STOPPED")
+
+    # Check spool & pending
+    spool_count = 0
+    if os.path.exists(SPOOL_FILE):
+        with open(SPOOL_FILE, "r") as f:
+            spool_count = len([l for l in f if l.strip()])
+
+    pending_count = 0
+    if os.path.exists(PENDING_FILE):
+        with open(PENDING_FILE, "r") as f:
+            pending_count = len([l for l in f if l.strip()])
+
+    print(f"● Local Spool: {spool_count} entries waiting for worker")
+    print(f"● Pending Queue: {pending_count} entries buffered offline")
+
+    # Check Pi connectivity
+    print(f"\nChecking Raspberry Pi at http://{PI_HOST}:{PI_PORT} ...")
+    try:
+        url = f"http://{PI_HOST}:{PI_PORT}/health"
+        req = urllib.request.Request(url, method="GET")
+        with urllib.request.urlopen(req, timeout=1.5) as resp:
+            if resp.status == 200:
+                print(f"✔ Raspberry Pi Server: ONLINE & READY")
+            else:
+                print(f"⚠ Raspberry Pi Server responded with HTTP {resp.status}")
+    except Exception as e:
+        print(f"✖ Raspberry Pi Server: OFFLINE or UNREACHABLE ({e})")
+        print(f"  (Local commands are safely buffered in {PENDING_FILE} and will sync when online)")
+
+def test_log():
+    url = f"http://{PI_HOST}:{PI_PORT}/log"
+    import time
+    test_entry = {
+        "command": "echo 'Hello from go/hi test'",
+        "time": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "duration": "0.012s",
+        "exit_code": 0
+    }
+    print(f"Sending test entry to {url} ...")
+    try:
+        req = urllib.request.Request(
+            url,
+            data=json.dumps(test_entry).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST"
+        )
+        with urllib.request.urlopen(req, timeout=2.0) as resp:
+            print(f"✔ Success! Response HTTP {resp.status}")
+    except Exception as e:
+        print(f"✖ Failed: {e}")
+
+def main():
+    if len(sys.argv) < 2 or sys.argv[1] == "status":
+        status()
+    elif sys.argv[1] == "test":
+        test_log()
+    elif sys.argv[1] == "stop":
+        pid = get_daemon_pid()
+        if pid:
+            os.kill(pid, 15)
+            print(f"Stopped daemon (PID {pid})")
+        else:
+            print("Daemon is not running.")
+    elif sys.argv[1] == "start":
+        pid = get_daemon_pid()
+        if pid:
+            print(f"Daemon already running (PID {pid})")
+        else:
+            repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            daemon_script = os.path.join(repo_root, "client", "gohi-daemon.py")
+            subprocess.Popen([sys.executable, daemon_script])
+            print("Started go/hi background daemon.")
+    else:
+        print("Usage: gohi-ctl [status|test|start|stop]")
+
+if __name__ == "__main__":
+    main()
