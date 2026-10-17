@@ -16,7 +16,7 @@ PID_FILE = os.path.join(GOHI_DIR, "daemon.pid")
 SPOOL_FILE = os.path.join(GOHI_DIR, "spool.log")
 PENDING_FILE = os.path.join(GOHI_DIR, "pending.log")
 PI_HOST = os.environ.get("GOHI_HOST", "192.168.0.40")
-PI_PORT = int(os.environ.get("GOHI_PORT", "8080"))
+PI_PORT = int(os.environ.get("GOHI_PORT", "8003"))
 
 def get_daemon_pid():
     if os.path.exists(PID_FILE):
@@ -104,9 +104,10 @@ def main():
         if pid:
             print(f"Daemon already running (PID {pid})")
         else:
-            repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            real_file = os.path.realpath(__file__)
+            repo_root = os.path.dirname(os.path.dirname(real_file))
             daemon_script = os.path.join(repo_root, "client", "gohi-daemon.py")
-            subprocess.Popen([sys.executable, daemon_script])
+            subprocess.Popen([sys.executable, daemon_script], start_new_session=True)
             print("Started go/hi background daemon.")
     else:
         print("Usage: gohi-ctl [status|test|start|stop]")

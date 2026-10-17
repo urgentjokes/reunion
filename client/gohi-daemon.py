@@ -4,18 +4,20 @@ go/hi Mac Background Daemon
 Monitors the local command spool and reliably ships interaction records
 to the Raspberry Pi living at 192.168.0.40.
 Ensures zero data loss with local pending queue and automatic retry.
+Also maintains a local backup HTML file at ~/developer-stuff/go-hi/index.html.
 """
 
 import os
 import sys
 import time
 import json
+import html
 import signal
 import urllib.request
 import urllib.error
 
 PI_HOST = os.environ.get("GOHI_HOST", "192.168.0.40")
-PI_PORT = int(os.environ.get("GOHI_PORT", "8080"))
+PI_PORT = int(os.environ.get("GOHI_PORT", "8003"))
 PI_URL = f"http://{PI_HOST}:{PI_PORT}/log"
 
 GOHI_DIR = os.path.expanduser("~/.gohi")
@@ -23,6 +25,10 @@ PID_FILE = os.path.join(GOHI_DIR, "daemon.pid")
 SPOOL_FILE = os.path.join(GOHI_DIR, "spool.log")
 PENDING_FILE = os.path.join(GOHI_DIR, "pending.log")
 DAEMON_LOG = os.path.join(GOHI_DIR, "daemon.log")
+
+LOCAL_HTML_FILE = os.path.expanduser("~/developer-stuff/go-hi/index.html")
+REPO_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TEMPLATE_FILE = os.path.join(REPO_DIR, "server", "index.html")
 
 running = True
 
@@ -43,8 +49,59 @@ def handle_signal(sig, frame):
 signal.signal(signal.SIGTERM, handle_signal)
 signal.signal(signal.SIGINT, handle_signal)
 
+def append_to_local_html(entry):
+    """Appends interaction entry to local backup HTML file at ~/developer-stuff/go-hi/index.html."""
+    try:
+        if not os.path.exists(LOCAL_HTML_FILE):
+            if os.path.exists(TEMPLATE_FILE):
+                with open(TEMPLATE_FILE, "r", encoding="utf-8") as tf:
+                    base_content = tf.read()
+                with open(LOCAL_HTML_FILE, "w", encoding="utf-8") as lf:
+                    lf.write(base_content)
+            else:
+                return
+
+        with open(LOCAL_HTML_FILE, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        marker = "<!-- GOHI_ENTRIES_START -->"
+        if marker not in content:
+            marker = '<tbody id="logBody">'
+
+        is_success = str(entry.get("exit_code", "0")) == "0"
+        badge_class = "badge-success" if is_success else "badge-error"
+        cmd = html.escape(str(entry.get("command", "")))
+        time_str = html.escape(str(entry.get("time", "")))
+        duration = html.escape(str(entry.get("duration", "")))
+        exit_code = html.escape(str(entry.get("exit_code", 0)))
+        entry_id = html.escape(str(entry.get("id", int(time.time() * 1000))))
+
+        new_row = f'''
+            <tr class="log-row" data-id="{entry_id}">
+              <td class="command-cell">
+                <a href="#" class="command-link" onclick="copyCommand(this, event)" data-command="{cmd}">
+                  <span>{cmd}</span>
+                  <span class="copy-icon">📋</span>
+                </a>
+              </td>
+              <td class="time-cell">{time_str}</td>
+              <td class="duration-cell">{duration}</td>
+              <td class="error-cell">
+                <span class="badge {badge_class}">{exit_code}</span>
+              </td>
+            </tr>'''
+
+        parts = content.split(marker, 1)
+        if len(parts) == 2:
+            new_content = parts[0] + marker + new_row + parts[1]
+            with open(LOCAL_HTML_FILE, "w", encoding="utf-8") as f:
+                f.write(new_content)
+    except Exception as e:
+        log(f"Error appending to local HTML backup: {e}")
+
 def send_to_pi(entry):
-    """Sends a single log entry to the Raspberry Pi over HTTP."""
+    """Sends a single log entry to the Raspberry Pi over HTTP and writes to local backup HTML."""
+    append_to_local_html(entry)
     data = json.dumps(entry).encode("utf-8")
     req = urllib.request.Request(
         PI_URL,
@@ -140,6 +197,16 @@ def process_spool():
 
 def run_daemon():
     os.makedirs(GOHI_DIR, exist_ok=True)
+
+    # Initialize local HTML backup if not yet present
+    if not os.path.exists(LOCAL_HTML_FILE) and os.path.exists(TEMPLATE_FILE):
+        try:
+            with open(TEMPLATE_FILE, "r", encoding="utf-8") as tf:
+                content = tf.read()
+            with open(LOCAL_HTML_FILE, "w", encoding="utf-8") as lf:
+                lf.write(content)
+        except Exception as e:
+            log(f"Error initializing local HTML: {e}")
 
     # Check pidfile
     if os.path.exists(PID_FILE):

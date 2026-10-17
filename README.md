@@ -18,6 +18,7 @@ A lightweight terminal interaction logger for macOS and Raspberry Pi. It automat
  │                        │                               │
  │                        ▼                               │
  │          gohi-daemon.py (background worker)            │
+ │             ├─► Local HTML backup (~/go-hi/index.html) │
  │             └─► Retries offline buffering              │
  └────────────────────────┬───────────────────────────────┘
                           │ HTTP POST /log
@@ -25,7 +26,7 @@ A lightweight terminal interaction logger for macOS and Raspberry Pi. It automat
  ┌────────────────────────────────────────────────────────┐
  │             Raspberry Pi (192.168.0.40)                │
  │                                                        │
- │   server.py (port 8080)                                │
+ │   server.py (port 8003)                                │
  │     ├─► Appends <tr> row directly to index.html        │
  │     ├─► Serves "Hello–I’m Home" web page               │
  │     └─► Live-updates connected browser tabs            │
@@ -63,7 +64,7 @@ Run the automated deploy script:
 This copies the server files to `bokkun@192.168.0.40:/home/bokkun/go-hi/server`, installs and starts the `systemd` service (`gohi-server.service`), and verifies the endpoint.
 
 You can view the page anytime by opening:
-**`http://192.168.0.40:8080`**
+**`http://192.168.0.40:8003`** (or open the local backup at `~/developer-stuff/go-hi/index.html`)
 
 ### Step 2: Install Mac Client Hook
 
@@ -73,12 +74,18 @@ Run the local installer:
 ```
 This:
 - Adds the `gohi.zsh` source hook to `~/.zshrc` (and `~/.bashrc` if present).
+- Adds the `hello` alias to manually start the daemon whenever needed.
 - Symlinks `gohi-ctl` into `~/.local/bin/gohi-ctl` for easy status checks.
 - Launches the background daemon.
 
 To activate immediately in your current terminal:
 ```bash
 source ~/.zshrc
+```
+
+To manually launch the daemon anytime:
+```bash
+hello
 ```
 
 ---

@@ -13,7 +13,7 @@ import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import argparse
 
-DEFAULT_PORT = 8080
+DEFAULT_PORT = 8003
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 INDEX_FILE = os.path.join(BASE_DIR, "index.html")
 LOG_FILE = os.path.join(BASE_DIR, "history.jsonl")

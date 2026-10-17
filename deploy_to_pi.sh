@@ -35,9 +35,9 @@ EOF
 
 echo ""
 echo "4. Testing connection to Raspberry Pi server..."
-if curl -s -f "http://$PI_HOST:8080/health" >/dev/null; then
+if curl -s -f "http://$PI_HOST:8003/health" >/dev/null; then
     echo "✔ SUCCESS! Raspberry Pi server is running and healthy at:"
-    echo "   http://$PI_HOST:8080"
+    echo "   http://$PI_HOST:8003"
 else
     echo "Server deployed. Check status with: ssh $TARGET 'systemctl status gohi-server'"
 fi
