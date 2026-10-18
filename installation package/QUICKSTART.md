@@ -1,6 +1,25 @@
 # 🚀 go/hi Quickstart Guide
 
-**go/hi** is an intelligent, low-overhead terminal interaction monitor that logs every command you run, along with its execution timestamp, duration, and exit status. It provides an elegant, dark-mode web dashboard featuring click-to-copy, instant search filtering, sortable columns, and one-click deletion of unwanted commands.
+**go/hi** is an intelligent, low-overhead terminal interaction monitor that logs every command you run, along with timestamps, execution durations, and exit status, presented in a clean, dark-mode web dashboard.
+
+It is designed to be completely flexible and supports **three distinct use cases** depending on your workflow:
+
+1. **[Use Case 1: Standalone Local HTML File](#-use-case-1-standalone-local-html-file-zero-server-zero-daemon)** — Zero server, zero daemon. Everything logs directly to a local HTML file on your machine.
+2. **[Use Case 2: Remote Server Only](#-use-case-2-remote-server-only-centralized-network-logger)** — Commands ship to a central server (e.g. Raspberry Pi) on your network. No local HTML files stored.
+3. **[Use Case 3: Remote Server with Local HTML Backup](#-use-case-3-remote-server-with-local-html-backup-hybrid--offline-safe)** — The best of both worlds. The remote server hosts your live home dashboard, while your machine maintains a synced local HTML backup copy with offline spooling.
+
+---
+
+## 📊 Comparison of the 3 Use Cases
+
+| Feature | Use Case 1: Local HTML File | Use Case 2: Remote Server Only | Use Case 3: Remote + Local Backup |
+| :--- | :--- | :--- | :--- |
+| **Architecture** | Zero-server, zero-daemon | Client daemon + HTTP server | Client daemon + HTTP server |
+| **Web Server Needed** | ❌ No | ✅ Yes (Raspberry Pi / Linux host) | ✅ Yes (Raspberry Pi / Linux host) |
+| **Background Daemon** | ❌ No | ✅ Yes (`gohi-daemon.py`) | ✅ Yes (`gohi-daemon.py`) |
+| **Where Logs Live** | `~/terminal-history.html` | Server `history.jsonl` & `index.html` | Server **AND** `~/.gohi/backup.html` |
+| **Offline Behavior** | Always writes to local disk | Buffers in `pending.log`, syncs on connect | Buffers in queue **and** writes to backup HTML |
+| **Ideal For** | Single laptop or directly on a Pi | Clean laptop, centralized logging | Travelers, offline work, zero-loss safety |
 
 ---
 
@@ -8,133 +27,188 @@
 
 ```text
 installation package/
-├── QUICKSTART.md              # This guide
-├── README.md                  # Overview & architecture
+├── QUICKSTART.md              # This guide (speaks to all 3 use cases)
+├── README.md                  # Project overview
 ├── LICENSE                    # MIT License
-├── config.example.env         # Sample environment configuration
-├── install.sh                 # Client installer (Mac / Linux)
-├── deploy_server.sh           # Automated remote server deployer (Raspberry Pi / Linux)
+├── config.example.env         # Central configuration template
+├── install.sh                 # Client installer (Use Cases 2 & 3)
+├── deploy_server.sh           # Remote server deployer via SSH (Use Cases 2 & 3)
 │
 ├── client/                    # Client-side files
-│   ├── gohi-ctl               # CLI control tool (status, start, stop, restart, test)
-│   ├── gohi-daemon.py         # Background daemon with offline buffer & local backup
+│   ├── gohi-ctl               # CLI control tool (status, open, test, restart)
+│   ├── gohi-daemon.py         # Daemon with configurable local backup & spooling
 │   ├── gohi.zsh               # Non-blocking Zsh preexec/precmd hooks
 │   └── gohi.bash              # Non-blocking Bash DEBUG trap hooks
 │
 ├── server/                    # Web server & dashboard
-│   ├── index.html             # "Hello–I'm Home" web interface
-│   ├── server.py              # Lightweight HTTP server & API
+│   ├── index.html             # "Hello–I'm Home" web UI (sortable, copyable, trash can)
+│   ├── server.py              # Lightweight HTTP server & API (port 8003 default)
 │   └── gohi-server.service    # Systemd service unit for 24/7 background operation
 │
-└── local-logger/              # Zero-server, zero-daemon standalone mode
-    ├── index.html             # Standalone dashboard template
-    ├── append.py              # Subshell safe appender
-    ├── gohi-local.sh          # Self-contained shell hooks for bash & zsh
+└── local-logger/              # Standalone local-only mode (Use Case 1)
+    ├── index.html             # Standalone local dashboard template
+    ├── append.py              # Safe subshell appender
+    ├── gohi-local.sh          # Self-contained Bash & Zsh hooks
     └── install-local.sh       # One-step local installer
 ```
 
 ---
 
-## 🎯 Choose Your Deployment Mode
+## 🍓 Use Case 1: Standalone Local HTML File (Zero-Server, Zero-Daemon)
 
-| Feature | Option A: Remote Server Mode | Option B: Standalone Local Mode |
-| :--- | :--- | :--- |
-| **Ideal For** | Laptops/workstations logging to a home server / Pi | Single machine or direct use on a Pi |
-| **Server Needed** | Yes (runs lightweight HTTP server on Pi/server) | **No server required** |
-| **Daemon Needed** | Yes (local daemon ships logs & buffers offline) | **No daemon required** |
-| **Web Dashboard** | Hosted at `http://<host>:8003` with auto-polling | Local file (`file://$HOME/terminal-history.html`) |
-| **Interactive Deletes** | Syncs live deletions across browser and server | Instant visual deletion in browser |
-| **Offline Buffering** | Spools locally if offline, flushes when reconnected | Always direct to disk |
-
----
-
-## Option A: Client & Remote Server Setup (Recommended)
-
-### Step 1: Configure Your Network Settings
-Copy `config.example.env` to `config.env`:
-```bash
-cp config.example.env config.env
-```
-Edit `config.env` with your server details:
-```bash
-# IP or hostname of your Raspberry Pi / remote server
-GOHI_HOST="192.168.0.40"
-
-# Port to serve the dashboard on (default: 8003)
-GOHI_PORT="8003"
-
-# SSH user for deploying to the remote server
-REMOTE_USER="pi"
-```
-
-### Step 2: Deploy the Server to Raspberry Pi (or Linux Server)
-Run the automated deployment script from your machine:
-```bash
-./deploy_server.sh
-```
-*What this does:*
-1. Securely copies `server/` to `~/go-hi/server` on your remote server via SSH/SCP.
-2. Generates and activates a systemd service (`gohi-server.service`).
-3. Starts the server automatically and verifies health on port 8003.
-
-### Step 3: Install the Client on Your Machine (Mac / Linux)
-On your laptop or workstation, run:
-```bash
-./install.sh
-```
-*What this does:*
-1. Initializes `~/.gohi` for configuration and offline spool storage.
-2. Symlinks `gohi-ctl` into `~/.local/bin/gohi-ctl`.
-3. Adds hooks to `~/.zshrc` (or `~/.bashrc`).
-4. Starts the background daemon `gohi-daemon.py`.
-
-### Step 4: Activate & Open
-Reload your shell:
-```bash
-source ~/.zshrc   # Or open a new terminal window / tab
-```
-You will notice the `(Hello)` indicator in your prompt. 
-
-Type `hello` in your terminal to open the web dashboard in your browser!
-```bash
-hello
-```
-
----
-
-## Option B: Standalone Local Mode (Zero-Server, Zero-Daemon)
-
-If you just want your commands logged to an HTML dashboard on the local machine without running any background server or daemon:
+**Goal:** You want all commands logged to an elegant HTML dashboard on your machine without running any background server or daemon.
 
 ### Step 1: Run the Local Installer
+From the `installation package/` directory:
 ```bash
 ./local-logger/install-local.sh
 ```
 *What this does:*
-1. Creates `~/terminal-history.html` from the dashboard template.
-2. Hooks into `~/.zshrc` and `~/.bashrc`.
-3. Configures prompt prefix and the `hello` helper command.
+- Initializes `~/terminal-history.html` from the dashboard template.
+- Sets execute permissions on helper scripts.
+- Hooks non-blocking shell handlers into `~/.zshrc` and/or `~/.bashrc`.
 
-### Step 2: Activate & Enjoy
+### Step 2: Activate Shell
+Reload your shell configuration or open a new terminal tab:
 ```bash
-source ~/.zshrc   # or source ~/.bashrc
+source ~/.zshrc   # Or: source ~/.bashrc
 ```
-Every command you run is now logged directly to `~/terminal-history.html`.
+Your prompt will display the `(Hello)` prefix.
 
-Type `hello` to open your local dashboard in your browser at any time!
+### Step 3: View Your Dashboard
+Run commands as usual. At any time, open your local dashboard by typing:
+```bash
+hello
+```
+Or open the file directly in your browser:
+```text
+file:///Users/<your-username>/terminal-history.html
+```
+
+---
+
+## 🌐 Use Case 2: Remote Server Only (Centralized Network Logger)
+
+**Goal:** You want a centralized dashboard running on your home server (e.g. Raspberry Pi) at `http://<server-ip>:8003`. Your laptop sends commands across your local network directly to the server, and **does not** maintain any local HTML backup files.
+
+### Step 1: Configure for Remote Only
+Copy `config.example.env` to `config.env`:
+```bash
+cp config.example.env config.env
+```
+Edit `config.env` and disable the local backup:
+```bash
+# Server IP or hostname
+GOHI_HOST="192.168.0.40"
+
+# Server Port
+GOHI_PORT="8003"
+
+# SSH user for server deployment
+REMOTE_USER="pi"
+
+# Disable local HTML backup (Remote Only mode)
+ENABLE_LOCAL_BACKUP=false
+```
+
+### Step 2: Deploy Server to Raspberry Pi / Linux Host
+From your laptop, deploy the server files and systemd service over SSH:
+```bash
+./deploy_server.sh
+```
+The script will copy `server/`, create the systemd service, start it, and verify that `http://<server-ip>:8003/health` is online.
+
+### Step 3: Install Client on Your Laptop / Workstation
+Run the client installer:
+```bash
+./install.sh
+```
+*What this does:*
+- Initializes `~/.gohi/` with your `config.env`.
+- Links `gohi-ctl` into `~/.local/bin/gohi-ctl`.
+- Adds hooks to `~/.zshrc` (or `~/.bashrc`).
+- Starts `gohi-daemon.py` with `ENABLE_LOCAL_BACKUP=false`.
+
+### Step 4: Activate & Open
+Reload your shell:
+```bash
+source ~/.zshrc
+```
+Type `hello` in your terminal to open the remote server dashboard in your browser (`http://<server-ip>:8003`).
+
+*(Note: If your laptop is temporarily offline, commands are buffered in `~/.gohi/pending.log` and automatically shipped the moment your laptop reconnects to the network).*
+
+---
+
+## 🛡️ Use Case 3: Remote Server with Local HTML Backup (Hybrid / Offline-Safe)
+
+**Goal:** You want the centralized remote server dashboard on your local network, **plus** a synced local HTML backup copy (`~/.gohi/backup.html`) on your laptop so you can view your history even when offline or away from home.
+
+### Step 1: Configure with Local Backup Enabled
+Copy `config.example.env` to `config.env`:
+```bash
+cp config.example.env config.env
+```
+Ensure `ENABLE_LOCAL_BACKUP=true` (this is the default):
+```bash
+# Server IP or hostname
+GOHI_HOST="192.168.0.40"
+
+# Server Port
+GOHI_PORT="8003"
+
+# SSH user for server deployment
+REMOTE_USER="pi"
+
+# Keep a synced local HTML backup copy (~/.gohi/backup.html)
+ENABLE_LOCAL_BACKUP=true
+```
+
+### Step 2: Deploy the Remote Server
+```bash
+./deploy_server.sh
+```
+
+### Step 3: Install the Client
+```bash
+./install.sh
+```
+*What this does:*
+- Sets up the background daemon with concurrent dual-writing:
+  1. Appends interaction entries immediately to `~/.gohi/backup.html`.
+  2. Forwards interactions to the remote server at `http://<server-ip>:8003/log`.
+  3. If the server is unreachable, buffers commands in `~/.gohi/pending.log` and automatically syncs them when reconnected.
+
+### Step 4: Activate & Access
+Reload your shell:
+```bash
+source ~/.zshrc
+```
+
+- **Open the Dashboard**: Simply type `hello`. If your server is reachable, it opens `http://<server-ip>:8003`. If you're offline or away from home, it automatically falls back to opening your local `~/.gohi/backup.html`!
+- **Direct Local File Access**: You can also open the local backup at any time:
+  ```bash
+  open ~/.gohi/backup.html
+  ```
 
 ---
 
 ## 🛠️ Management & Commands
 
-### Client Daemon Management (`gohi-ctl`)
-If running in Remote Mode (Option A), use `gohi-ctl` to control the client:
+### Client Controller (`gohi-ctl`)
+Use `gohi-ctl` to inspect and control the client:
 
 ```bash
-# Check status of daemon, server connectivity, and spool queue
+# Check status of daemon, local queue, local backup, and server connectivity
 gohi-ctl status
 
-# Restart the client daemon
+# Open the dashboard in your default browser (server if online, local backup if offline)
+gohi-ctl open
+
+# Send a test entry to verify end-to-end logging
+gohi-ctl test
+
+# Restart the client background daemon
 gohi-ctl restart
 
 # Stop the client daemon
@@ -142,21 +216,17 @@ gohi-ctl stop
 
 # Start the client daemon
 gohi-ctl start
-
-# Send a test entry to verify end-to-end logging
-gohi-ctl test
 ```
 
-### Remote Server Management
-On your Raspberry Pi / remote server:
+### Remote Server Management (on Raspberry Pi / Linux Host)
 ```bash
-# Check server status
+# Check server service status
 sudo systemctl status gohi-server
 
 # Restart server
 sudo systemctl restart gohi-server
 
-# View live server logs
+# View live server journal logs
 journalctl -u gohi-server -f
 ```
 
@@ -164,27 +234,28 @@ journalctl -u gohi-server -f
 
 ## 🌟 Dashboard Features
 
-- **Click-to-Copy (📋)**: Click any command in the table to instantly copy it to your clipboard with a confirmation toast.
-- **Delete Button (🗑️)**: Click the trash can icon on any row to delete unwanted commands or typos.
-- **Sortable Columns**: Click **Command**, **Time**, **Duration**, or **Error code** headers to sort. By default, rows sort with the **most recent commands at the top**.
-- **Instant Search**: Type in the search bar to filter commands and timestamps in real time.
-- **Live Auto-Refresh**: In server mode, the dashboard polls for new commands every 2 seconds without reloading the page.
+Across all three use cases, you get the same clean, responsive dark-mode interface:
+
+- **📋 Click-to-Copy**: Click any command link to copy the exact text to your clipboard with a confirmation toast.
+- **🗑️ Delete Button**: Click the trash can icon on any row to instantly remove unwanted commands or sensitive entries. In server mode, deletions sync to the server.
+- **↕️ Sortable Columns**: Click **Command**, **Time**, **Duration**, or **Error code** headers to sort. Defaults to **most recent commands at the top**.
+- **🔍 Real-Time Filter**: Type in the search box to filter commands and timestamps in real time.
+- **⚡ Live Auto-Poll**: In server mode, the dashboard polls every 2 seconds to display commands as they finish.
 
 ---
 
-## ❓ Troubleshooting
+## ❓ Troubleshooting & FAQ
 
-### My prompt doesn't show `(Hello)`:
-Run `source ~/.zshrc` (or `source ~/.bashrc`), or open a completely new terminal window.
+### How do I switch between Use Case 2 (Remote Only) and Use Case 3 (Remote + Local Backup)?
+Edit `~/.gohi/config.env` and change `ENABLE_LOCAL_BACKUP`:
+- `ENABLE_LOCAL_BACKUP=true` (Use Case 3)
+- `ENABLE_LOCAL_BACKUP=false` (Use Case 2)
 
-### `gohi-ctl` says command not found:
-Ensure `~/.local/bin` is in your `PATH`. You can add this to your `~/.zshrc`:
+Then restart the daemon:
 ```bash
-export PATH="$HOME/.local/bin:$PATH"
+gohi-ctl restart
 ```
 
-### My laptop is offline / away from home:
-`go/hi` features **zero data loss**:
-1. When disconnected from your server, commands are safely buffered in `~/.gohi/pending.log`.
-2. A full local HTML backup is maintained at `~/.gohi/backup.html`.
-3. As soon as your laptop reconnects to the network, the daemon automatically flushes all pending commands to the server.
+### How do I uninstall or remove the prompt prefix?
+- To disable the hooks, remove the `go/hi` source lines from `~/.zshrc` and `~/.bashrc`.
+- To stop the daemon, run `gohi-ctl stop`.

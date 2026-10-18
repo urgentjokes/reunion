@@ -85,6 +85,12 @@ def status():
     print(f"● Local Spool: {spool_count} entries waiting for worker")
     print(f"● Pending Queue: {pending_count} entries buffered offline")
 
+    backup_file = os.path.join(GOHI_DIR, "backup.html")
+    if os.path.exists(backup_file):
+        print(f"● Local Backup: {backup_file} (active)")
+    else:
+        print(f"○ Local Backup: disabled or not yet created")
+
     print(f"\nChecking Server at http://{PI_HOST}:{PI_PORT} ...")
     try:
         url = f"http://{PI_HOST}:{PI_PORT}/health"
@@ -97,6 +103,33 @@ def status():
     except Exception as e:
         print(f"✖ Server: OFFLINE or UNREACHABLE ({e})")
         print(f"  (Local commands are safely buffered in {PENDING_FILE} and will sync when online)")
+
+def open_dashboard():
+    server_online = False
+    try:
+        url = f"http://{PI_HOST}:{PI_PORT}/health"
+        req = urllib.request.Request(url, method="GET")
+        with urllib.request.urlopen(req, timeout=1.0) as resp:
+            if resp.status == 200:
+                server_online = True
+    except Exception:
+        server_online = False
+
+    backup_file = os.path.join(GOHI_DIR, "backup.html")
+    if server_online:
+        target = f"http://{PI_HOST}:{PI_PORT}"
+    elif os.path.exists(backup_file):
+        target = backup_file
+    else:
+        target = f"http://{PI_HOST}:{PI_PORT}"
+
+    print(f"Opening dashboard: {target}")
+    if sys.platform == "darwin":
+        subprocess.run(["open", target])
+    elif sys.platform.startswith("linux"):
+        subprocess.Popen(["xdg-open", target], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    else:
+        print(f"Dashboard URL: {target}")
 
 def test_log():
     url = f"http://{PI_HOST}:{PI_PORT}/log"
@@ -122,6 +155,8 @@ def test_log():
 def main():
     if len(sys.argv) < 2 or sys.argv[1] == "status":
         status()
+    elif sys.argv[1] in ("open", "dash", "dashboard"):
+        open_dashboard()
     elif sys.argv[1] == "test":
         test_log()
     elif sys.argv[1] == "stop":
@@ -153,7 +188,7 @@ def main():
         new_pid = get_daemon_pid()
         print(f"Started go/hi background daemon (PID {new_pid}).")
     else:
-        print("Usage: gohi-ctl [status|test|start|stop|restart]")
+        print("Usage: gohi-ctl [status|open|test|start|stop|restart]")
 
 if __name__ == "__main__":
     main()

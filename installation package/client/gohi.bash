@@ -124,7 +124,7 @@ _gohi_set_prompt
 # Manual launch function for the daemon
 unalias hello 2>/dev/null
 hello() {
-    "$GOHI_CLIENT_DIR/gohi-ctl" start
+    "$GOHI_CLIENT_DIR/gohi-ctl" open 2>/dev/null || "$GOHI_CLIENT_DIR/gohi-ctl" start
 }
 
 _gohi_cmd=""

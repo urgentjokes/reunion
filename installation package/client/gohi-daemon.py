@@ -30,7 +30,8 @@ def load_config():
     """Loads configuration from config.env or environment variables."""
     cfg = {
         "host": os.environ.get("GOHI_HOST", "192.168.0.40"),
-        "port": int(os.environ.get("GOHI_PORT", "8003"))
+        "port": int(os.environ.get("GOHI_PORT", "8003")),
+        "enable_local_backup": os.environ.get("ENABLE_LOCAL_BACKUP", "true").lower() in ("true", "1", "yes")
     }
     candidates = [
         os.path.join(GOHI_DIR, "config.env"),
@@ -50,6 +51,8 @@ def load_config():
                                 cfg["host"] = v
                             elif k == "GOHI_PORT":
                                 cfg["port"] = int(v)
+                            elif k == "ENABLE_LOCAL_BACKUP":
+                                cfg["enable_local_backup"] = v.lower() in ("true", "1", "yes")
             except Exception:
                 pass
             break
@@ -58,6 +61,7 @@ def load_config():
 config = load_config()
 PI_HOST = config["host"]
 PI_PORT = config["port"]
+ENABLE_LOCAL_BACKUP = config["enable_local_backup"]
 PI_URL = f"http://{PI_HOST}:{PI_PORT}/log"
 
 running = True
@@ -80,7 +84,9 @@ signal.signal(signal.SIGTERM, handle_signal)
 signal.signal(signal.SIGINT, handle_signal)
 
 def append_to_local_html(entry):
-    """Appends interaction entry to local backup HTML file."""
+    """Appends interaction entry to local backup HTML file if enabled."""
+    if not ENABLE_LOCAL_BACKUP:
+        return
     try:
         if not os.path.exists(LOCAL_HTML_FILE):
             if os.path.exists(TEMPLATE_FILE):
@@ -140,8 +146,7 @@ def append_to_local_html(entry):
         log(f"Error appending to local HTML backup: {e}")
 
 def send_to_remote(entry):
-    """Sends a single log entry to the remote server over HTTP and writes to local backup."""
-    append_to_local_html(entry)
+    """Sends a single log entry to the remote server over HTTP."""
     data = json.dumps(entry).encode("utf-8")
     req = urllib.request.Request(
         PI_URL,
@@ -228,14 +233,16 @@ def process_spool():
     with open(PENDING_FILE, "a", encoding="utf-8") as f:
         for entry in entries:
             f.write(json.dumps(entry) + "\n")
+            if ENABLE_LOCAL_BACKUP:
+                append_to_local_html(entry)
 
     flush_pending()
 
 def run_daemon():
     os.makedirs(GOHI_DIR, exist_ok=True)
 
-    # Initialize local HTML backup if not present
-    if not os.path.exists(LOCAL_HTML_FILE) and os.path.exists(TEMPLATE_FILE):
+    # Initialize local HTML backup if enabled and not present
+    if ENABLE_LOCAL_BACKUP and not os.path.exists(LOCAL_HTML_FILE) and os.path.exists(TEMPLATE_FILE):
         try:
             with open(TEMPLATE_FILE, "r", encoding="utf-8") as tf:
                 content = tf.read()
