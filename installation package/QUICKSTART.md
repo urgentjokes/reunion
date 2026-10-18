@@ -1,6 +1,6 @@
 # 🚀 go/hi Quickstart Guide
 
-**go/hi** is an intelligent, low-overhead terminal interaction monitor that logs every command you run, along with timestamps, execution durations, and exit status, presented in a clean, dark-mode web dashboard.
+**go/hi** is an intelligent, low-overhead terminal interaction monitor that logs every command you run, along with timestamps, execution durations, and exit status, presented in a clean, dark-mode web dashboard. It also lets you search for previous commands, and provides one-click reusability.
 
 It is designed to be completely flexible and supports **three distinct use cases** depending on your workflow:
 
