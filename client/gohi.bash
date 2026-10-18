@@ -46,6 +46,11 @@ _gohi_preexec() {
     if [ -n "$_gohi_in_prompt" ]; then
         return
     fi
+    case "$BASH_COMMAND" in
+        _gohi*|"$PROMPT_COMMAND")
+            return
+            ;;
+    esac
     _gohi_cmd="$BASH_COMMAND"
     _gohi_start_time=$(/usr/bin/python3 -c 'import time; print(time.time())' 2>/dev/null || date +%s)
     _gohi_time=$(date "+%Y-%m-%d %H:%M:%S")

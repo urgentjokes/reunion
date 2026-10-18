@@ -10,12 +10,26 @@ echo "========================================="
 echo " Installing go/hi Local Logger on Pi"
 echo "========================================="
 
-# 1. Initialize HTML file if not present
+# 1. Initialize or update HTML file
 if [ ! -f "$TARGET_HTML" ]; then
     cp "$DIR/index.html" "$TARGET_HTML"
     echo "✔ Created local log HTML at: $TARGET_HTML"
 else
-    echo "✔ Found existing local log HTML at: $TARGET_HTML"
+    echo "✔ Updating existing local log HTML at: $TARGET_HTML"
+    # Ensure two line breaks before footer and remove any internal precmd rows
+    python3 -c "
+import re
+path = '$TARGET_HTML'
+with open(path, 'r', encoding='utf-8') as f:
+    c = f.read()
+# Remove accidental precmd entries
+c = re.sub(r'[ \t]*<tr class=\"log-row\"[^>]*>.*?_gohi_pi_precmd.*?</tr>\n?', '', c, flags=re.DOTALL)
+# Ensure two line breaks before footer
+if '<br><br>\n    <footer>' not in c and '<footer>' in c:
+    c = c.replace('<footer>', '<br><br>\n    <footer>')
+with open(path, 'w', encoding='utf-8') as f:
+    f.write(c)
+" 2>/dev/null || true
 fi
 
 # 2. Add to ~/.bashrc
