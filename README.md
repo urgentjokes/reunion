@@ -128,7 +128,10 @@ The server runs on your Raspberry Pi at `192.168.0.40:8003` as a `systemd` servi
 ### Step 2: Install Mac Client Hook
 ```bash
 ./install.sh
-source ~/.zshrc
+### Step 3: (Optional) Install Local Logger on Raspberry Pi Itself
+To log your shell commands directly on the Raspberry Pi into a local HTML file (`~/pi-history.html`) with zero server/daemon needed:
+```bash
+./deploy_pi_local_logger.sh
 ```
 
 ---
@@ -136,14 +139,19 @@ source ~/.zshrc
 ## File Structure
 
 - `client/`
-  - `gohi.zsh`: Shell hooks (`preexec`, `precmd`), prompt modifier, and daemon self-healing for zsh.
-  - `gohi.bash`: Equivalent hooks for bash users.
+  - `gohi.zsh`: Mac shell hooks, prompt modifier, and daemon checker for zsh.
+  - `gohi.bash`: Mac shell hooks for bash.
   - `gohi-daemon.py`: Mac background daemon shipping records to the Pi with offline queueing.
   - `gohi-ctl`: Command-line management tool (`status`, `start`, `stop`, `restart`, `test`).
 - `server/`
   - `index.html`: "Hello–I’m Home" dashboard template.
   - `server.py`: Lightweight Python 3 HTTP server that serves `index.html` and appends incoming logs.
   - `gohi-server.service`: Systemd service configuration for Raspberry Pi OS.
+- `pi-client/`
+  - `gohi-pi.sh`: Zero-server local shell logger for the Raspberry Pi (bash & zsh).
+  - `index.html`: Standalone HTML dashboard template for Pi local history.
+  - `install-pi.sh`: Installer script that runs on the Pi.
 - `index.html`: Local backup HTML copy automatically maintained on your Mac.
 - `install.sh`: Mac client configuration script.
-- `deploy_to_pi.sh`: Remote Raspberry Pi deployment script.
+- `deploy_to_pi.sh`: Deploy Raspberry Pi HTTP server.
+- `deploy_pi_local_logger.sh`: Deploy zero-server local logger directly to Raspberry Pi.
