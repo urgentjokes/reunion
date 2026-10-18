@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hello–I’m Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient: radial-gradient(circle at 15% 15%, #181c24 0%, #0d1117 60%, #090d13 100%);
+      --card-bg: rgba(22, 27, 34, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --accent: #58a6ff;
+      --accent-glow: rgba(88, 166, 255, 0.25);
+      --success: #3fb950;
+      --success-bg: rgba(63, 185, 80, 0.15);
+      --error: #f85149;
+      --error-bg: rgba(248, 81, 73, 0.15);
+      --text-main: #f0f6fc;
+      --text-muted: #8b949e;
+      --row-hover: rgba(88, 166, 255, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      background-attachment: fixed;
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 2.5rem 2rem;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--card-border);
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #1f6feb 0%, #a371f7 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 16px rgba(31, 111, 235, 0.35);
+      font-size: 1.35rem;
+    }
+
+    h1 {
+      font-size: 1.85rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      background: linear-gradient(120deg, #ffffff 30%, #a5d6ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .search-input {
+      background: rgba(13, 17, 23, 0.8);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      min-width: 260px;
+      transition: all 0.2s ease;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .live-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.04);
+      padding: 0.45rem 0.85rem;
+      border-radius: 20px;
+      border: 1px solid var(--card-border);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--success);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--success);
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+    }
+
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    thead {
+      background: rgba(13, 17, 23, 0.6);
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    th {
+      padding: 1rem 1.25rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      user-select: none;
+    }
+
+    th.sortable {
+      cursor: pointer;
+      transition: color 0.15s ease;
+    }
+
+    th.sortable:hover {
+      color: var(--text-main);
+    }
+
+    .th-content {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .sort-icon {
+      font-size: 0.8rem;
+      opacity: 0.5;
+      transition: opacity 0.15s ease;
+    }
+
+    th.sorted-asc .sort-icon,
+    th.sorted-desc .sort-icon {
+      opacity: 1;
+      color: var(--accent);
+    }
+
+    th.th-command { width: 52%; }
+    th.th-time { width: 20%; }
+    th.th-duration { width: 14%; }
+    th.th-error { width: 10%; }
+    th.th-action { width: 4%; text-align: right; }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      transition: background-color 0.15s ease, opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background: var(--row-hover);
+    }
+
+    tbody tr.deleting {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+
+    td {
+      padding: 0.85rem 1.25rem;
+      font-size: 0.88rem;
+      vertical-align: middle;
+    }
+
+    /* Command link & copy styling */
+    .command-cell {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+    }
+
+    .command-link {
+      color: var(--accent);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      max-width: 100%;
+      word-break: break-all;
+      transition: color 0.15s ease;
+    }
+
+    .command-link:hover {
+      color: #79c0ff;
+      text-decoration: underline;
+    }
+
+    .copy-icon {
+      font-size: 0.8rem;
+      opacity: 0;
+      transform: scale(0.85);
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+
+    .command-cell:hover .copy-icon {
+      opacity: 0.8;
+      transform: scale(1);
+    }
+
+    .copy-icon:hover {
+      opacity: 1 !important;
+      transform: scale(1.15) !important;
+    }
+
+    .time-cell {
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
+
+    .duration-cell {
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
+
+    .error-cell {
+      white-space: nowrap;
+    }
+
+    .action-cell {
+      text-align: right;
+      padding-right: 1.25rem;
+    }
+
+    /* Status Badges */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .badge-success {
+      background: var(--success-bg);
+      color: var(--success);
+      border: 1px solid rgba(63, 185, 80, 0.3);
+    }
+
+    .badge-error {
+      background: var(--error-bg);
+      color: var(--error);
+      border: 1px solid rgba(248, 81, 73, 0.3);
+    }
+
+    /* Delete Button */
+    .delete-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.4rem;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      opacity: 0.6;
+    }
+
+    .delete-btn:hover {
+      color: var(--error);
+      background: var(--error-bg);
+      opacity: 1;
+      transform: scale(1.1);
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #1f6feb;
+      color: #fff;
+      padding: 0.8rem 1.25rem;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .toast.toast-delete {
+      background: #b62324;
+    }
+
+    footer {
+      margin-top: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="brand-icon">🏠</div>
+        <div>
+          <h1>Hello–I’m Home</h1>
+        </div>
+      </div>
+      <div class="header-controls">
+        <input 
+          type="text" 
+          id="searchInput" 
+          class="search-input" 
+          placeholder="Filter commands..." 
+          oninput="filterRows()"
+        />
+        <div class="live-status">
+          <div class="status-dot"></div>
+          <span id="entryCount">0 entries</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="card">
+      <div class="table-container">
+        <table id="logTable">
+          <thead>
+            <tr>
+              <th class="th-command sortable" onclick="handleSort(0)" data-col="0">
+                <span class="th-content">Command <span class="sort-icon">↕</span></span>
+              </th>
+              <th class="th-time sortable sorted-desc" onclick="handleSort(1)" data-col="1">
+                <span class="th-content">Time <span class="sort-icon">▼</span></span>
+              </th>
+              <th class="th-duration sortable" onclick="handleSort(2)" data-col="2">
+                <span class="th-content">Duration <span class="sort-icon">↕</span></span>
+              </th>
+              <th class="th-error sortable" onclick="handleSort(3)" data-col="3">
+                <span class="th-content">Error code <span class="sort-icon">↕</span></span>
+              </th>
+              <th class="th-action">
+                <span class="th-content"></span>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="logBody">
+<!-- GOHI_ENTRIES_START -->
+<!-- GOHI_ENTRIES_END -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <br><br>
+    <footer>
+      <span>go/hi · Terminal Interaction Monitor</span>
+      <span id="footerLocation">go/hi Server</span>
+    </footer>
+  </div>
+
+  <div id="toast" class="toast">
+    <span id="toastIcon">📋</span>
+    <span id="toastMsg">Command copied to clipboard!</span>
+  </div>
+
+  <script>
+    let currentSortCol = 1; // Default: Time
+    let currentSortDir = 'desc'; // Default: most recent first (latest at top)
+
+    function copyCommand(element, event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      const cmdText = element.getAttribute('data-command') || element.innerText.trim();
+      if (!cmdText) return;
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(cmdText).then(() => {
+          showToast(`Copied: "${cmdText}"`, '📋');
+        }).catch(() => fallbackCopy(cmdText));
+      } else {
+        fallbackCopy(cmdText);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.opacity = "0";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        showToast(`Copied: "${text}"`, '📋');
+      } catch (err) {
+        showToast("Failed to copy");
+      }
+      document.body.removeChild(textArea);
+    }
+
+    function deleteEntry(btn, event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      const row = btn.closest('tr');
+      if (!row) return;
+
+      const entryId = row.getAttribute('data-id');
+      const cmd = row.querySelector('.command-cell')?.innerText?.trim() || '';
+
+      // Visual fade out
+      row.classList.add('deleting');
+      setTimeout(() => {
+        row.remove();
+        updateEntryCount();
+      }, 250);
+
+      showToast(`Deleted: "${cmd.substring(0, 25)}${cmd.length > 25 ? '...' : ''}"`, '🗑️', true);
+
+      // Notify server if connected
+      if (entryId && window.location.protocol.startsWith('http')) {
+        fetch('/api/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: entryId })
+        }).catch(err => {
+          console.error("Failed to delete on server:", err);
+        });
+      }
+    }
+
+    let toastTimer = null;
+    function showToast(msg, icon = '📋', isDelete = false) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      const toastIcon = document.getElementById('toastIcon');
+      toastMsg.textContent = msg;
+      toastIcon.textContent = icon;
+      if (isDelete) {
+        toast.classList.add('toast-delete');
+      } else {
+        toast.classList.remove('toast-delete');
+      }
+      toast.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+
+    function updateEntryCount() {
+      const rows = document.querySelectorAll('#logBody tr.log-row');
+      const countSpan = document.getElementById('entryCount');
+      if (countSpan) {
+        countSpan.textContent = `${rows.length} ${rows.length === 1 ? 'entry' : 'entries'}`;
+      }
+    }
+
+    function filterRows() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const rows = document.querySelectorAll('#logBody tr.log-row');
+      rows.forEach(row => {
+        const cmd = row.querySelector('.command-cell')?.innerText.toLowerCase() || '';
+        const time = row.querySelector('.time-cell')?.innerText.toLowerCase() || '';
+        if (cmd.includes(query) || time.includes(query)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+
+    function parseDuration(text) {
+      let total = 0;
+      const h = text.match(/(\d+)h/);
+      const m = text.match(/(\d+)m/);
+      const s = text.match(/([\d.]+)s/);
+      if (h) total += parseFloat(h[1]) * 3600;
+      if (m) total += parseFloat(m[1]) * 60;
+      if (s) total += parseFloat(s[1]);
+      return isNaN(total) ? 0 : total;
+    }
+
+    function handleSort(colIndex) {
+      if (currentSortCol === colIndex) {
+        currentSortDir = currentSortDir === 'asc' ? 'desc' : 'asc';
+      } else {
+        currentSortCol = colIndex;
+        currentSortDir = colIndex === 1 ? 'desc' : 'asc';
+      }
+      applySort();
+    }
+
+    function applySort() {
+      const table = document.getElementById('logTable');
+      const tbody = document.getElementById('logBody');
+      const rows = Array.from(tbody.querySelectorAll('tr.log-row'));
+
+      rows.sort((a, b) => {
+        let valA, valB;
+        if (currentSortCol === 0) { // Command
+          valA = a.querySelector('.command-cell')?.innerText.trim().toLowerCase() || '';
+          valB = b.querySelector('.command-cell')?.innerText.trim().toLowerCase() || '';
+          return currentSortDir === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        } else if (currentSortCol === 1) { // Time (chronological)
+          valA = a.querySelector('.time-cell')?.innerText.trim() || '';
+          valB = b.querySelector('.time-cell')?.innerText.trim() || '';
+          return currentSortDir === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        } else if (currentSortCol === 2) { // Duration
+          valA = parseDuration(a.querySelector('.duration-cell')?.innerText || '');
+          valB = parseDuration(b.querySelector('.duration-cell')?.innerText || '');
+          return currentSortDir === 'asc' ? valA - valB : valB - valA;
+        } else if (currentSortCol === 3) { // Error code
+          valA = parseInt(a.querySelector('.error-cell')?.innerText.trim() || '0', 10);
+          valB = parseInt(b.querySelector('.error-cell')?.innerText.trim() || '0', 10);
+          return currentSortDir === 'asc' ? valA - valB : valB - valA;
+        }
+        return 0;
+      });
+
+      // Re-append sorted rows
+      rows.forEach(r => tbody.appendChild(r));
+
+      // Update header indicators
+      const ths = table.querySelectorAll('th.sortable');
+      ths.forEach(th => {
+        const col = parseInt(th.getAttribute('data-col'), 10);
+        const icon = th.querySelector('.sort-icon');
+        th.classList.remove('sorted-asc', 'sorted-desc');
+        if (col === currentSortCol) {
+          th.classList.add(currentSortDir === 'asc' ? 'sorted-asc' : 'sorted-desc');
+          icon.textContent = currentSortDir === 'asc' ? '▲' : '▼';
+        } else {
+          icon.textContent = '↕';
+        }
+      });
+    }
+
+    function pollRecentEntries() {
+      fetch('/api/recent')
+        .then(res => res.json())
+        .then(data => {
+          if (Array.isArray(data) && data.length > 0) {
+            let added = false;
+            const logBody = document.getElementById('logBody');
+            data.forEach(entry => {
+              const existing = document.querySelector(`tr[data-id="${entry.id}"]`);
+              if (!existing) {
+                const tr = createRowElement(entry);
+                logBody.appendChild(tr);
+                added = true;
+              }
+            });
+            if (added) {
+              updateEntryCount();
+              applySort();
+              filterRows();
+            }
+          }
+        })
+        .catch(() => {});
+    }
+
+    function createRowElement(entry) {
+      const tr = document.createElement('tr');
+      tr.className = 'log-row';
+      if (entry.id) tr.setAttribute('data-id', entry.id);
+
+      const isSuccess = String(entry.exit_code) === '0';
+      const badgeClass = isSuccess ? 'badge-success' : 'badge-error';
+
+      tr.innerHTML = `
+        <td class="command-cell">
+          <a href="#" class="command-link" onclick="copyCommand(this, event)" data-command="${escapeHtml(entry.command)}">
+            <span>${escapeHtml(entry.command)}</span>
+            <span class="copy-icon">📋</span>
+          </a>
+        </td>
+        <td class="time-cell">${escapeHtml(entry.time)}</td>
+        <td class="duration-cell">${escapeHtml(entry.duration)}</td>
+        <td class="error-cell">
+          <span class="badge ${badgeClass}">${escapeHtml(String(entry.exit_code))}</span>
+        </td>
+        <td class="action-cell">
+          <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+          </button>
+        </td>
+      `;
+      return tr;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      updateEntryCount();
+      applySort();
+
+      if (window.location.protocol.startsWith('http')) {
+        const loc = document.getElementById('footerLocation');
+        if (loc) loc.textContent = `Living at ${window.location.host}`;
+        setInterval(pollRecentEntries, 2000);
+      }
+    });
+  </script>
+</body>
+</html>

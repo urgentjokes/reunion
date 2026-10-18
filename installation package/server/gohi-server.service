@@ -1,0 +1,16 @@
+[Unit]
+Description=go/hi Terminal Logging Server
+After=network.target
+
+[Service]
+Type=simple
+User=%u
+WorkingDirectory=%h/go-hi/server
+ExecStart=/usr/bin/python3 %h/go-hi/server/server.py --port 8003
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,159 @@
+#!/usr/bin/env python3
+"""
+go/hi Control Utility
+Allows checking daemon status, testing connectivity to the remote server,
+and managing the background process.
+"""
+
+import sys
+import os
+import time
+import json
+import urllib.request
+import subprocess
+
+REAL_FILE = os.path.realpath(__file__)
+CLIENT_DIR = os.path.dirname(REAL_FILE)
+REPO_DIR = os.path.dirname(CLIENT_DIR)
+
+GOHI_DIR = os.path.expanduser("~/.gohi")
+PID_FILE = os.path.join(GOHI_DIR, "daemon.pid")
+SPOOL_FILE = os.path.join(GOHI_DIR, "spool.log")
+PENDING_FILE = os.path.join(GOHI_DIR, "pending.log")
+
+def load_config():
+    cfg = {
+        "host": os.environ.get("GOHI_HOST", "192.168.0.40"),
+        "port": int(os.environ.get("GOHI_PORT", "8003"))
+    }
+    candidates = [
+        os.path.join(GOHI_DIR, "config.env"),
+        os.path.join(REPO_DIR, "config.env")
+    ]
+    for c in candidates:
+        if os.path.exists(c):
+            try:
+                with open(c, "r", encoding="utf-8") as f:
+                    for line in f:
+                        line = line.strip()
+                        if line and not line.startswith("#") and "=" in line:
+                            k, v = line.split("=", 1)
+                            k = k.strip()
+                            v = v.strip().strip('"').strip("'")
+                            if k == "GOHI_HOST":
+                                cfg["host"] = v
+                            elif k == "GOHI_PORT":
+                                cfg["port"] = int(v)
+            except Exception:
+                pass
+            break
+    return cfg
+
+config = load_config()
+PI_HOST = config["host"]
+PI_PORT = config["port"]
+
+def get_daemon_pid():
+    if os.path.exists(PID_FILE):
+        try:
+            with open(PID_FILE, "r") as f:
+                pid = int(f.read().strip())
+            os.kill(pid, 0)
+            return pid
+        except (OSError, ValueError):
+            return None
+    return None
+
+def status():
+    pid = get_daemon_pid()
+    print("=== go/hi Status ===")
+    if pid:
+        print(f"● Daemon: RUNNING (PID {pid})")
+    else:
+        print("○ Daemon: STOPPED")
+
+    spool_count = 0
+    if os.path.exists(SPOOL_FILE):
+        with open(SPOOL_FILE, "r") as f:
+            spool_count = len([l for l in f if l.strip()])
+
+    pending_count = 0
+    if os.path.exists(PENDING_FILE):
+        with open(PENDING_FILE, "r") as f:
+            pending_count = len([l for l in f if l.strip()])
+
+    print(f"● Local Spool: {spool_count} entries waiting for worker")
+    print(f"● Pending Queue: {pending_count} entries buffered offline")
+
+    print(f"\nChecking Server at http://{PI_HOST}:{PI_PORT} ...")
+    try:
+        url = f"http://{PI_HOST}:{PI_PORT}/health"
+        req = urllib.request.Request(url, method="GET")
+        with urllib.request.urlopen(req, timeout=1.5) as resp:
+            if resp.status == 200:
+                print(f"✔ Server: ONLINE & READY")
+            else:
+                print(f"⚠ Server responded with HTTP {resp.status}")
+    except Exception as e:
+        print(f"✖ Server: OFFLINE or UNREACHABLE ({e})")
+        print(f"  (Local commands are safely buffered in {PENDING_FILE} and will sync when online)")
+
+def test_log():
+    url = f"http://{PI_HOST}:{PI_PORT}/log"
+    test_entry = {
+        "command": "echo 'Hello from go/hi test'",
+        "time": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "duration": "0.012s",
+        "exit_code": 0
+    }
+    print(f"Sending test entry to {url} ...")
+    try:
+        req = urllib.request.Request(
+            url,
+            data=json.dumps(test_entry).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST"
+        )
+        with urllib.request.urlopen(req, timeout=2.0) as resp:
+            print(f"✔ Success! Response HTTP {resp.status}")
+    except Exception as e:
+        print(f"✖ Failed: {e}")
+
+def main():
+    if len(sys.argv) < 2 or sys.argv[1] == "status":
+        status()
+    elif sys.argv[1] == "test":
+        test_log()
+    elif sys.argv[1] == "stop":
+        pid = get_daemon_pid()
+        if pid:
+            os.kill(pid, 15)
+            print(f"Stopped daemon (PID {pid})")
+        else:
+            print("Daemon is not running.")
+    elif sys.argv[1] == "start":
+        pid = get_daemon_pid()
+        if pid:
+            print(f"Daemon already running (PID {pid})")
+        else:
+            daemon_script = os.path.join(CLIENT_DIR, "gohi-daemon.py")
+            subprocess.Popen([sys.executable, daemon_script], start_new_session=True)
+            time.sleep(0.3)
+            new_pid = get_daemon_pid()
+            print(f"Started go/hi background daemon (PID {new_pid}).")
+    elif sys.argv[1] == "restart":
+        pid = get_daemon_pid()
+        if pid:
+            os.kill(pid, 15)
+            print(f"Stopped daemon (PID {pid})")
+            time.sleep(0.5)
+        daemon_script = os.path.join(CLIENT_DIR, "gohi-daemon.py")
+        subprocess.Popen([sys.executable, daemon_script], start_new_session=True)
+        time.sleep(0.3)
+        new_pid = get_daemon_pid()
+        print(f"Started go/hi background daemon (PID {new_pid}).")
+    else:
+        print("Usage: gohi-ctl [status|test|start|stop|restart]")
+
+if __name__ == "__main__":
+    main()
