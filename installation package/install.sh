@@ -1,5 +1,5 @@
 #!/bin/bash
-# Install nostalgia Client on macOS / Linux
+# Install reunion Client on macOS / Linux
 # Configures shell hooks, links gohi-ctl CLI, and starts the background daemon.
 set -e
 
@@ -10,7 +10,7 @@ LOCAL_BIN="$HOME/.local/bin"
 GOHI_DIR="$HOME/.gohi"
 
 echo "========================================="
-echo " Installing nostalgia Client"
+echo " Installing reunion Client"
 echo "========================================="
 
 # 1. Create client spool and config directory
@@ -45,7 +45,7 @@ if [ -f "$ZSHRC" ] || [ "$SHELL" = "*/zsh" ]; then
     GOHI_ZSH="[ -f \"$DIR/client/gohi.zsh\" ] && source \"$DIR/client/gohi.zsh\""
     if ! grep -q "gohi.zsh" "$ZSHRC"; then
         echo "" >> "$ZSHRC"
-        echo "# nostalgia Terminal Logging Client" >> "$ZSHRC"
+        echo "# reunion Terminal Logging Client" >> "$ZSHRC"
         echo "$GOHI_ZSH" >> "$ZSHRC"
         echo "✔ Added hook to $ZSHRC"
     else
@@ -59,7 +59,7 @@ if [ -f "$BASHRC" ] || [ "$SHELL" = "*/bash" ]; then
     GOHI_BASH="[ -f \"$DIR/client/gohi.bash\" ] && source \"$DIR/client/gohi.bash\""
     if ! grep -q "gohi.bash" "$BASHRC"; then
         echo "" >> "$BASHRC"
-        echo "# nostalgia Terminal Logging Client" >> "$BASHRC"
+        echo "# reunion Terminal Logging Client" >> "$BASHRC"
         echo "$GOHI_BASH" >> "$BASHRC"
         echo "✔ Added hook to $BASHRC"
     else
@@ -69,7 +69,7 @@ if [ -f "$BASHRC" ] || [ "$SHELL" = "*/bash" ]; then
 fi
 
 # 5. Start background daemon
-echo "Starting nostalgia background daemon..."
+echo "Starting reunion background daemon..."
 "$DIR/client/gohi-ctl" restart >/dev/null 2>&1 || {
     nohup /usr/bin/python3 "$DIR/client/gohi-daemon.py" >/dev/null 2>&1 &
 }

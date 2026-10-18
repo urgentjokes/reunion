@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-nostalgia Local Logger - Appender Helper
+reunion Local Logger - Appender Helper
 Safely appends a command record directly to the local HTML file.
 Auto-initializes the HTML file from the template if it does not yet exist.
 """

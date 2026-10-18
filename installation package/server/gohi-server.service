@@ -1,5 +1,5 @@
 [Unit]
-Description=nostalgia Terminal Logging Server
+Description=reunion Terminal Logging Server
 After=network.target
 
 [Service]

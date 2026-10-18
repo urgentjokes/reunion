@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-nostalgia Control Utility
+reunion Control Utility
 Allows checking daemon status, testing connectivity to the remote server,
 and managing the background process.
 """
@@ -66,7 +66,7 @@ def get_daemon_pid():
 
 def status():
     pid = get_daemon_pid()
-    print("=== nostalgia Status ===")
+    print("=== reunion Status ===")
     if pid:
         print(f"● Daemon: RUNNING (PID {pid})")
     else:
@@ -134,7 +134,7 @@ def open_dashboard():
 def test_log():
     url = f"http://{PI_HOST}:{PI_PORT}/log"
     test_entry = {
-        "command": "echo 'Hello from nostalgia test'",
+        "command": "echo 'Hello from reunion test'",
         "time": time.strftime("%Y-%m-%d %H:%M:%S"),
         "duration": "0.012s",
         "exit_code": 0
@@ -175,7 +175,7 @@ def main():
             subprocess.Popen([sys.executable, daemon_script], start_new_session=True)
             time.sleep(0.3)
             new_pid = get_daemon_pid()
-            print(f"Started nostalgia background daemon (PID {new_pid}).")
+            print(f"Started reunion background daemon (PID {new_pid}).")
     elif sys.argv[1] == "restart":
         pid = get_daemon_pid()
         if pid:
@@ -186,7 +186,7 @@ def main():
         subprocess.Popen([sys.executable, daemon_script], start_new_session=True)
         time.sleep(0.3)
         new_pid = get_daemon_pid()
-        print(f"Started nostalgia background daemon (PID {new_pid}).")
+        print(f"Started reunion background daemon (PID {new_pid}).")
     else:
         print("Usage: gohi-ctl [status|open|test|start|stop|restart]")
 

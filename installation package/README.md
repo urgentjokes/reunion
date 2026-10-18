@@ -1,4 +1,4 @@
-# nostalgia — Terminal Interaction Monitor
+# reunion — Terminal Interaction Monitor
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python: 3.7+](https://img.shields.io/badge/Python-3.7+-brightgreen.svg)]()

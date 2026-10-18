@@ -1,5 +1,5 @@
 #!/bin/bash
-# Install nostalgia Standalone Local Logger
+# Install reunion Standalone Local Logger
 # Zero-server, zero-daemon: logs bash/zsh interactions directly to ~/terminal-history.html
 set -e
 
@@ -7,7 +7,7 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TARGET_HTML="${GOHI_HTML:-$HOME/terminal-history.html}"
 
 echo "========================================="
-echo " Installing nostalgia Standalone Local Logger"
+echo " Installing reunion Standalone Local Logger"
 echo "========================================="
 
 # 1. Initialize HTML file
@@ -29,7 +29,7 @@ if [ -f "$HOME/.zshrc" ] || [ "$SHELL" = "*/zsh" ]; then
     touch "$ZSHRC"
     if ! grep -q "gohi-local.sh" "$ZSHRC"; then
         echo "" >> "$ZSHRC"
-        echo "# nostalgia Standalone Local Terminal Logger" >> "$ZSHRC"
+        echo "# reunion Standalone Local Terminal Logger" >> "$ZSHRC"
         echo "$HOOK_LINE" >> "$ZSHRC"
         echo "✔ Added hook to $ZSHRC"
     else
@@ -44,7 +44,7 @@ if [ -f "$HOME/.bashrc" ] || [ "$SHELL" = "*/bash" ]; then
     touch "$BASHRC"
     if ! grep -q "gohi-local.sh" "$BASHRC"; then
         echo "" >> "$BASHRC"
-        echo "# nostalgia Standalone Local Terminal Logger" >> "$BASHRC"
+        echo "# reunion Standalone Local Terminal Logger" >> "$BASHRC"
         echo "$HOOK_LINE" >> "$BASHRC"
         echo "✔ Added hook to $BASHRC"
     else

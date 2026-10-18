@@ -1,4 +1,4 @@
-# nostalgia — Terminal Interaction Monitor & Viewer
+# reunion — Terminal Interaction Monitor & Viewer
 
 A lightweight terminal interaction logger for macOS and Raspberry Pi. It automatically captures commands, timestamps, execution durations, and exit codes from all Terminal windows and tabs, prepends `(Hello)` to your prompt, and streams the logs to a live HTML page hosted on your Raspberry Pi living at `192.168.0.40:8003`.
 

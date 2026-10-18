@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-nostalgia Client Background Daemon
+reunion Client Background Daemon
 Monitors the local command spool and ships interaction records
 to the remote server. Ensures zero data loss via offline buffering
 and maintains a local HTML backup.
@@ -257,7 +257,7 @@ def run_daemon():
             with open(PID_FILE, "r") as f:
                 old_pid = int(f.read().strip())
             os.kill(old_pid, 0)
-            print(f"nostalgia daemon already running with PID {old_pid}")
+            print(f"reunion daemon already running with PID {old_pid}")
             sys.exit(0)
         except (OSError, ValueError):
             pass
@@ -265,7 +265,7 @@ def run_daemon():
     with open(PID_FILE, "w") as f:
         f.write(str(os.getpid()))
 
-    log(f"nostalgia daemon started (PID {os.getpid()}). Target: {PI_URL}")
+    log(f"reunion daemon started (PID {os.getpid()}). Target: {PI_URL}")
 
     last_pending_retry = time.time()
     try:
@@ -282,7 +282,7 @@ def run_daemon():
                 os.remove(PID_FILE)
             except Exception:
                 pass
-        log("nostalgia daemon stopped.")
+        log("reunion daemon stopped.")
 
 if __name__ == "__main__":
     run_daemon()
