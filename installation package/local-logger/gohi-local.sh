@@ -1,4 +1,4 @@
-# go/hi — Standalone Local Terminal Logger
+# nostalgia — Standalone Local Terminal Logger
 # Zero-server, zero-daemon: logs shell interactions directly to a local HTML file.
 # Works seamlessly in bash and zsh on Linux and macOS.
 

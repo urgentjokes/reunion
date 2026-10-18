@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-go/hi Logging Server
+nostalgia Logging Server
 Serves the "Hello–I'm Home" web page, appends incoming terminal interaction logs
 directly into the HTML file, and supports deleting unwanted commands.
 """
@@ -240,13 +240,13 @@ class GoHiHandler(BaseHTTPRequestHandler):
 
     def log_message(self, format, *args):
         # Concise logging
-        sys.stderr.write(f"[go/hi server] {self.address_string()} - {format % args}\n")
+        sys.stderr.write(f"[nostalgia server] {self.address_string()} - {format % args}\n")
 
 def run_server(port=DEFAULT_PORT):
     load_initial_cache()
     server_address = ("", port)
     httpd = HTTPServer(server_address, GoHiHandler)
-    print(f"🚀 go/hi Server running at http://0.0.0.0:{port}")
+    print(f"🚀 nostalgia Server running at http://0.0.0.0:{port}")
     print(f"📄 Serving and appending directly to: {INDEX_FILE}")
     try:
         httpd.serve_forever()
@@ -255,7 +255,7 @@ def run_server(port=DEFAULT_PORT):
         httpd.server_close()
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="go/hi Logging Server")
+    parser = argparse.ArgumentParser(description="nostalgia Logging Server")
     parser.add_argument("--port", type=int, default=int(os.environ.get("GOHI_PORT", DEFAULT_PORT)), help="Port to listen on")
     args = parser.parse_args()
     run_server(args.port)

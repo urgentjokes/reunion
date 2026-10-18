@@ -1,4 +1,4 @@
-# go/hi Terminal Logging Integration for bash
+# nostalgia Terminal Logging Integration for bash
 # Captures command string, timestamp, execution duration, and exit code.
 
 GOHI_CLIENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

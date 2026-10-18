@@ -1,6 +1,6 @@
-# 🚀 go/hi Quickstart Guide
+# 🚀 nostalgia Quickstart Guide
 
-**go/hi** is an intelligent, low-overhead terminal interaction monitor that logs every command you run, along with timestamps, execution durations, and exit status, presented in a clean, dark-mode web dashboard. It also lets you search for previous commands, and provides one-click reusability.
+**nostalgia** is an intelligent, low-overhead terminal interaction monitor that logs every command you run, along with timestamps, execution durations, and exit status, presented in a clean, dark-mode web dashboard. It also lets you search for previous commands, and provides one-click reusability.
 
 It is designed to be completely flexible and supports **three distinct use cases** depending on your workflow:
 
@@ -257,5 +257,5 @@ gohi-ctl restart
 ```
 
 ### How do I uninstall or remove the prompt prefix?
-- To disable the hooks, remove the `go/hi` source lines from `~/.zshrc` and `~/.bashrc`.
+- To disable the hooks, remove the `nostalgia` source lines from `~/.zshrc` and `~/.bashrc`.
 - To stop the daemon, run `gohi-ctl stop`.

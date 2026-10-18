@@ -1,5 +1,5 @@
 [Unit]
-Description=go/hi Terminal Logging Server
+Description=nostalgia Terminal Logging Server
 After=network.target
 
 [Service]

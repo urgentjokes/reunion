@@ -1,4 +1,4 @@
-# go/hi Terminal Logging Integration for zsh
+# nostalgia Terminal Logging Integration for zsh
 # Captures command string, timestamp, execution duration, and exit code.
 
 GOHI_CLIENT_DIR="${0:A:h}"

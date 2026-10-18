@@ -1,5 +1,5 @@
 #!/bin/bash
-# Deploy go/hi Server to Raspberry Pi or Remote Linux Machine
+# Deploy nostalgia Server to Raspberry Pi or Remote Linux Machine
 # Usage: ./deploy_server.sh [user@host or user] [host] [port]
 set -e
 
@@ -42,7 +42,7 @@ TARGET="$REMOTE_USER@$REMOTE_HOST"
 REMOTE_DIR="/home/$REMOTE_USER/go-hi"
 
 echo "========================================="
-echo " Deploying go/hi Server"
+echo " Deploying nostalgia Server"
 echo " Target: $TARGET"
 echo " Port:   $REMOTE_PORT"
 echo " Directory: $REMOTE_DIR"
@@ -62,7 +62,7 @@ SERVICE_FILE="/etc/systemd/system/gohi-server.service"
 echo "Generating systemd service file..."
 sudo tee "\$SERVICE_FILE" > /dev/null <<SERVICE_EOF
 [Unit]
-Description=go/hi Terminal Logging Server
+Description=nostalgia Terminal Logging Server
 After=network.target
 
 [Service]
