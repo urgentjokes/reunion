@@ -37,9 +37,9 @@ try:
     with open(html_path, 'r', encoding='utf-8') as f:
         content = f.read()
 
-    marker = '<!-- GOHI_ENTRIES_END -->'
+    marker = '<!-- GOHI_ENTRIES_START -->'
     if marker not in content:
-        marker = '</tbody>'
+        marker = '<tbody id="logBody">'
 
     is_success = str(exit_code) == '0'
     badge_class = 'badge-success' if is_success else 'badge-error'
@@ -75,7 +75,7 @@ try:
 
     parts = content.split(marker, 1)
     if len(parts) == 2:
-        new_content = parts[0] + new_row + marker + parts[1]
+        new_content = parts[0] + marker + '\n' + new_row + parts[1]
         with open(html_path, 'w', encoding='utf-8') as f:
             f.write(new_content)
 except Exception:

@@ -288,8 +288,8 @@
               <th class="th-command sortable" onclick="handleSort(0)" data-col="0">
                 <span class="th-content">Command <span class="sort-icon">↕</span></span>
               </th>
-              <th class="th-time sortable sorted-asc" onclick="handleSort(1)" data-col="1">
-                <span class="th-content">Time <span class="sort-icon">▲</span></span>
+              <th class="th-time sortable sorted-desc" onclick="handleSort(1)" data-col="1">
+                <span class="th-content">Time <span class="sort-icon">▼</span></span>
               </th>
               <th class="th-duration sortable" onclick="handleSort(2)" data-col="2">
                 <span class="th-content">Duration <span class="sort-icon">↕</span></span>
@@ -324,7 +324,7 @@
 
   <script>
     let currentSortCol = 1;
-    let currentSortDir = 'asc';
+    let currentSortDir = 'desc'; // Default: most recent first
 
     function copyCommand(element, event) {
       if (event) { event.preventDefault(); event.stopPropagation(); }
@@ -418,7 +418,7 @@
         currentSortDir = currentSortDir === 'asc' ? 'desc' : 'asc';
       } else {
         currentSortCol = colIndex;
-        currentSortDir = 'asc';
+        currentSortDir = colIndex === 1 ? 'desc' : 'asc';
       }
       applySort();
     }
