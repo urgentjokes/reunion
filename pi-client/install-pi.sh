@@ -32,6 +32,8 @@ with open(path, 'w', encoding='utf-8') as f:
 " 2>/dev/null || true
 fi
 
+chmod +x "$DIR/append.py" "$DIR/gohi-pi.sh" 2>/dev/null || true
+
 # 2. Add to ~/.bashrc
 BASHRC="$HOME/.bashrc"
 HOOK_LINE="[ -f \"$DIR/gohi-pi.sh\" ] && source \"$DIR/gohi-pi.sh\""

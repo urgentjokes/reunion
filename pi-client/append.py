@@ -2,6 +2,7 @@
 """
 go/hi Pi Local Logger - Helper
 Safely appends a command record to the local HTML file.
+Auto-initializes the file if it does not yet exist.
 """
 
 import sys
@@ -18,8 +19,19 @@ exit_code = sys.argv[4]
 html_path = sys.argv[5]
 entry_id = sys.argv[6]
 
+# Auto-initialize target HTML file if missing
 if not os.path.exists(html_path):
-    sys.exit(0)
+    template = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'index.html')
+    if os.path.exists(template):
+        try:
+            with open(template, 'r', encoding='utf-8') as tf:
+                base = tf.read()
+            with open(html_path, 'w', encoding='utf-8') as hf:
+                hf.write(base)
+        except Exception:
+            sys.exit(0)
+    else:
+        sys.exit(0)
 
 try:
     with open(html_path, 'r', encoding='utf-8') as f:

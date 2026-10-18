@@ -24,7 +24,7 @@ _gohi_pi_set_prompt() {
     esac
 }
 
-# 3. Background append function (detached subshell to suppress job notifications)
+# 3. Background append function (runs detached subshell to suppress bash job control messages)
 _gohi_pi_append() {
     local cmd="$1"
     local time_str="$2"
@@ -33,7 +33,7 @@ _gohi_pi_append() {
     local target_html="$5"
     local entry_id="$6"
 
-    ( /usr/bin/python3 "$GOHI_PI_DIR/append.py" "$cmd" "$time_str" "$duration" "$exit_code" "$target_html" "$entry_id" >/dev/null 2>&1 & )
+    ( python3 "$GOHI_PI_DIR/append.py" "$cmd" "$time_str" "$duration" "$exit_code" "$target_html" "$entry_id" >/dev/null 2>&1 & )
 }
 
 # 4. Shell Specific Hooks
@@ -77,20 +77,36 @@ if [ -n "$ZSH_VERSION" ]; then
     add-zsh-hook precmd _gohi_pi_precmd
 
 elif [ -n "$BASH_VERSION" ]; then
+    _gohi_pi_in_trap=0
+    _gohi_pi_in_prompt=0
+    _gohi_pi_cmd=""
 
     _gohi_pi_preexec() {
-        if [ -n "$_gohi_pi_in_prompt" ]; then
+        if [ "$_gohi_pi_in_trap" -eq 1 ] || [ "$_gohi_pi_in_prompt" -eq 1 ]; then
             return
         fi
-        # Ignore prompt commands and gohi internal functions
+        _gohi_pi_in_trap=1
+
+        # Ignore internal commands
         case "$BASH_COMMAND" in
             _gohi*|"$PROMPT_COMMAND")
+                _gohi_pi_in_trap=0
                 return
                 ;;
         esac
-        _gohi_pi_cmd="$BASH_COMMAND"
-        _gohi_pi_start=$(/usr/bin/python3 -c 'import time; print(time.time())' 2>/dev/null || date +%s)
-        _gohi_pi_time=$(date "+%Y-%m-%d %H:%M:%S")
+
+        # Only record the first command of the pipeline/cycle
+        if [ -z "$_gohi_pi_cmd" ]; then
+            _gohi_pi_cmd="$BASH_COMMAND"
+            _gohi_pi_time=$(date "+%Y-%m-%d %H:%M:%S")
+            if [ -n "$EPOCHREALTIME" ]; then
+                _gohi_pi_start="$EPOCHREALTIME"
+            else
+                _gohi_pi_start=$(date +%s)
+            fi
+        fi
+
+        _gohi_pi_in_trap=0
     }
 
     _gohi_pi_precmd() {
@@ -100,9 +116,10 @@ elif [ -n "$BASH_VERSION" ]; then
         if [ -n "$_gohi_pi_cmd" ]; then
             local duration="0.00s"
             if [ -n "$_gohi_pi_start" ]; then
-                duration=$(/usr/bin/python3 -c "
-import time
-diff = time.time() - float('$_gohi_pi_start')
+                if [ -n "$EPOCHREALTIME" ]; then
+                    local end_time="$EPOCHREALTIME"
+                    duration=$(python3 -c "
+diff = float('$end_time') - float('$_gohi_pi_start')
 if diff >= 60:
     m = int(diff // 60)
     s = int(diff % 60)
@@ -110,7 +127,11 @@ if diff >= 60:
 else:
     print(f'{diff:.3f}s')
 " 2>/dev/null || echo "0.00s")
+                else
+                    duration="$(( $(date +%s) - _gohi_pi_start ))s"
+                fi
             fi
+
             local entry_id=$(date +%s%N 2>/dev/null || date +%s)
             _gohi_pi_append "$_gohi_pi_cmd" "$_gohi_pi_time" "$duration" "$exit_code" "$GOHI_PI_HTML" "$entry_id"
             unset _gohi_pi_cmd
@@ -119,10 +140,13 @@ else:
         fi
 
         _gohi_pi_set_prompt
-        unset _gohi_pi_in_prompt
+        _gohi_pi_in_prompt=0
     }
 
-    _gohi_pi_set_prompt
-    trap '_gohi_pi_preexec' DEBUG
     PROMPT_COMMAND="_gohi_pi_precmd${PROMPT_COMMAND:+; $PROMPT_COMMAND}"
+    _gohi_pi_set_prompt
+    _gohi_pi_cmd=""
+    _gohi_pi_in_prompt=0
+    _gohi_pi_in_trap=0
+    trap '_gohi_pi_preexec' DEBUG
 fi

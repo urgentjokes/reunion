@@ -101,14 +101,15 @@ with open(spool, 'a', encoding='utf-8') as f:
     unset _gohi_in_prompt
 }
 
-_gohi_ensure_daemon
-_gohi_set_prompt
-
-trap '_gohi_preexec' DEBUG
 PROMPT_COMMAND="_gohi_precmd${PROMPT_COMMAND:+; $PROMPT_COMMAND}"
+_gohi_set_prompt
 
 # Manual launch function for the daemon
 unalias hello 2>/dev/null
 hello() {
     "$GOHI_DIR/client/gohi-ctl" start
 }
+
+_gohi_cmd=""
+_gohi_in_prompt=0
+trap '_gohi_preexec' DEBUG
