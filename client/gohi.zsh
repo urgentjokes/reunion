@@ -1,10 +1,11 @@
-# go/hi Terminal Logging Integration for zsh
+# reunion Terminal Logging Integration for zsh
 # Captures command string, timestamp, execution duration, and exit code.
 
-GOHI_DIR="${GOHI_DIR:-$HOME/developer-stuff/go-hi}"
+GOHI_CLIENT_DIR="${0:A:h}"
 GOHI_SPOOL_DIR="$HOME/.gohi"
 GOHI_PID_FILE="$GOHI_SPOOL_DIR/daemon.pid"
 GOHI_SPOOL_FILE="$GOHI_SPOOL_DIR/spool.log"
+GOHI_PREFIX="${GOHI_PROMPT_PREFIX:-(Hello)}"
 
 autoload -Uz add-zsh-hook
 zmodload zsh/datetime 2>/dev/null
@@ -22,33 +23,31 @@ _gohi_ensure_daemon() {
 
     if [ "$running" -eq 0 ]; then
         mkdir -p "$GOHI_SPOOL_DIR"
-        if [ -f "$GOHI_DIR/client/gohi-daemon.py" ]; then
-            nohup /usr/bin/python3 "$GOHI_DIR/client/gohi-daemon.py" >/dev/null 2>&1 &
+        if [ -f "$GOHI_CLIENT_DIR/gohi-daemon.py" ]; then
+            nohup python3 "$GOHI_CLIENT_DIR/gohi-daemon.py" >/dev/null 2>&1 &
         fi
     fi
 }
 
-# 2. Configure prompt to display (Hello) before existing prompt
+# 2. Configure prompt to display prefix before existing prompt
 _gohi_set_prompt() {
     case "$PS1" in
-        *"(Hello)"*)
+        *"$GOHI_PREFIX"*)
             return
             ;;
         $'\n'*)
-            PS1=$'\n(Hello) '"${PS1#$'\n'}"
+            PS1=$'\n'"$GOHI_PREFIX "'${PS1#$'\n'}'
             ;;
         *)
-            PS1="(Hello) $PS1"
+            PS1="$GOHI_PREFIX $PS1"
             ;;
     esac
 }
 
 # 3. Capture command at execution start
 _gohi_preexec() {
-    # Store exact command typed by user
     _gohi_cmd="$1"
-    
-    # Capture start time with microsecond resolution if available
+    _gohi_pwd="$PWD"
     if (( $+EPOCHREALTIME )); then
         _gohi_start_time=$EPOCHREALTIME
     else
@@ -66,7 +65,6 @@ _gohi_preexec() {
 _gohi_precmd() {
     local exit_code=$?
 
-    # Only process if a command was actually executed
     if [ -n "$_gohi_cmd" ]; then
         local duration_str="0.000s"
 
@@ -97,18 +95,21 @@ _gohi_precmd() {
         cmd_esc="${cmd_esc//$'\r'/\\r}"
         cmd_esc="${cmd_esc//$'\t'/\\t}"
 
-        # Fast write to local spool
-        mkdir -p "$GOHI_SPOOL_DIR"
-        printf '{"command":"%s","time":"%s","duration":"%s","exit_code":%d}\n' \
-            "$cmd_esc" "$_gohi_time" "$duration_str" "$exit_code" >> "$GOHI_SPOOL_FILE" 2>/dev/null
+        local pwd_esc="${_gohi_pwd//\\/\\\\}"
+        pwd_esc="${pwd_esc//\"/\\\"}"
+        pwd_esc="${pwd_esc//$'\n'/\\n}"
 
-        # Clean up per-command variables
+        # Fast non-blocking write to local spool
+        mkdir -p "$GOHI_SPOOL_DIR"
+        printf '{"command":"%s","time":"%s","duration":"%s","exit_code":%d,"pwd":"%s"}\n' \
+            "$cmd_esc" "$_gohi_time" "$duration_str" "$exit_code" "$pwd_esc" >> "$GOHI_SPOOL_FILE" 2>/dev/null
+
         unset _gohi_cmd
         unset _gohi_start_time
         unset _gohi_time
+        unset _gohi_pwd
     fi
 
-    # Keep prompt updated with (Hello)
     _gohi_set_prompt
 }
 
@@ -122,5 +123,5 @@ add-zsh-hook precmd _gohi_precmd
 # Manual launch function for the daemon
 unalias hello 2>/dev/null
 hello() {
-    "$GOHI_DIR/client/gohi-ctl" start
+    "$GOHI_CLIENT_DIR/gohi-ctl" open 2>/dev/null || "$GOHI_CLIENT_DIR/gohi-ctl" start
 }

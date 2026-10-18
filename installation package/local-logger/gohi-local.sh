@@ -33,8 +33,9 @@ _gohi_local_append() {
     local exit_code="$4"
     local target_html="$5"
     local entry_id="$6"
+    local pwd_dir="$7"
 
-    ( python3 "$GOHI_LOCAL_DIR/append.py" "$cmd" "$time_str" "$duration" "$exit_code" "$target_html" "$entry_id" >/dev/null 2>&1 & )
+    ( python3 "$GOHI_LOCAL_DIR/append.py" "$cmd" "$time_str" "$duration" "$exit_code" "$target_html" "$entry_id" "$pwd_dir" >/dev/null 2>&1 & )
 }
 
 # 4. Helper function to open local HTML dashboard in browser
@@ -60,6 +61,7 @@ if [ -n "$ZSH_VERSION" ]; then
 
     _gohi_local_preexec() {
         _gohi_cmd="$1"
+        _gohi_pwd="$PWD"
         if (( $+EPOCHREALTIME )); then
             _gohi_start=$EPOCHREALTIME
         else
@@ -81,10 +83,11 @@ if [ -n "$ZSH_VERSION" ]; then
                 fi
             fi
             local entry_id=$(date +%s%N 2>/dev/null || date +%s)
-            _gohi_local_append "$_gohi_cmd" "$_gohi_time" "$duration" "$exit_code" "$GOHI_HTML" "$entry_id"
+            _gohi_local_append "$_gohi_cmd" "$_gohi_time" "$duration" "$exit_code" "$GOHI_HTML" "$entry_id" "$_gohi_pwd"
             unset _gohi_cmd
             unset _gohi_start
             unset _gohi_time
+            unset _gohi_pwd
         fi
         _gohi_local_set_prompt
     }
@@ -115,6 +118,7 @@ elif [ -n "$BASH_VERSION" ]; then
         # Only record the first command of the pipeline/cycle
         if [ -z "$_gohi_cmd" ]; then
             _gohi_cmd="$BASH_COMMAND"
+            _gohi_pwd="$PWD"
             _gohi_time=$(date "+%Y-%m-%d %H:%M:%S")
             if [ -n "$EPOCHREALTIME" ]; then
                 _gohi_start="$EPOCHREALTIME"
@@ -150,8 +154,9 @@ else:
             fi
 
             local entry_id=$(date +%s%N 2>/dev/null || date +%s)
-            _gohi_local_append "$_gohi_cmd" "$_gohi_time" "$duration" "$exit_code" "$GOHI_HTML" "$entry_id"
+            _gohi_local_append "$_gohi_cmd" "$_gohi_time" "$duration" "$exit_code" "$GOHI_HTML" "$entry_id" "$_gohi_pwd"
             unset _gohi_cmd
+            unset _gohi_pwd
             unset _gohi_start
             unset _gohi_time
         fi

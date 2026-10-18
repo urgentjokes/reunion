@@ -114,34 +114,34 @@
       gap: 0.5rem;
       font-size: 0.85rem;
       color: var(--text-muted);
-      background: var(--card-bg);
+      background: rgba(255, 255, 255, 0.04);
+      padding: 0.45rem 0.85rem;
+      border-radius: 20px;
       border: 1px solid var(--card-border);
-      padding: 0.5rem 0.85rem;
-      border-radius: 9999px;
     }
 
     .status-dot {
       width: 8px;
       height: 8px;
-      border-radius: 50%;
       background: var(--success);
+      border-radius: 50%;
       box-shadow: 0 0 8px var(--success);
-      animation: pulse 2s infinite;
+      animation: pulse 2s infinite ease-in-out;
     }
 
     @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
     }
 
     .card {
       background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--card-border);
       border-radius: 14px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
       overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
     }
 
     .table-container {
@@ -155,81 +155,83 @@
       text-align: left;
     }
 
+    thead {
+      background: rgba(13, 17, 23, 0.6);
+      border-bottom: 1px solid var(--card-border);
+    }
+
     th {
-      background: rgba(13, 17, 23, 0.85);
       padding: 1rem 1.25rem;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
       color: var(--text-muted);
-      border-bottom: 1px solid var(--card-border);
-      position: sticky;
-      top: 0;
-      z-index: 10;
       user-select: none;
     }
 
     th.sortable {
       cursor: pointer;
-      transition: color 0.15s ease, background 0.15s ease;
+      transition: color 0.15s ease;
     }
 
     th.sortable:hover {
       color: var(--text-main);
-      background: rgba(22, 27, 34, 0.95);
     }
 
-    th .th-content {
+    .th-content {
       display: inline-flex;
       align-items: center;
-      gap: 0.45rem;
+      gap: 0.4rem;
     }
 
-    th .sort-icon {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      opacity: 0.4;
-      transition: opacity 0.15s ease, transform 0.15s ease;
+    .sort-icon {
+      font-size: 0.8rem;
+      opacity: 0.5;
+      transition: opacity 0.15s ease;
     }
 
-    th.sorted-asc .sort-icon {
-      opacity: 1;
-      color: var(--accent);
-    }
-
+    th.sorted-asc .sort-icon,
     th.sorted-desc .sort-icon {
       opacity: 1;
       color: var(--accent);
     }
 
-    th.th-command { width: 46%; }
-    th.th-time { width: 22%; }
-    th.th-duration { width: 13%; }
-    th.th-error { width: 11%; text-align: center; }
-    th.th-action { width: 8%; text-align: center; }
+    th.th-command { width: 38%; }
+    th.th-time { width: 17%; }
+    th.th-duration { width: 11%; }
+    th.th-error { width: 8%; }
+    th.th-pwd { width: 22%; }
+    th.th-action { width: 4%; text-align: right; }
 
-    td {
-      padding: 0.9rem 1.25rem;
-      border-bottom: 1px solid var(--card-border);
-      font-size: 0.92rem;
-      vertical-align: middle;
+    tbody tr {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
       transition: background-color 0.15s ease, opacity 0.25s ease, transform 0.25s ease;
     }
 
-    tbody tr:hover td {
-      background-color: var(--row-hover);
+    tbody tr:last-child {
+      border-bottom: none;
     }
 
-    tbody tr.deleting td {
+    tbody tr:hover {
+      background: var(--row-hover);
+    }
+
+    tbody tr.deleting {
       opacity: 0;
       transform: translateX(20px);
     }
 
+    td {
+      padding: 0.85rem 1.25rem;
+      font-size: 0.88rem;
+      vertical-align: middle;
+    }
+
+    /* Command link & copy styling */
     .command-cell {
-      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
-      font-size: 0.9rem;
-      word-break: break-all;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
     }
 
     .command-link {
@@ -237,61 +239,68 @@
       text-decoration: none;
       display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
-      cursor: pointer;
-      padding: 0.25rem 0.5rem;
-      margin: -0.25rem -0.5rem;
-      border-radius: 6px;
-      transition: all 0.2s ease;
+      gap: 0.5rem;
+      max-width: 100%;
+      word-break: break-all;
+      transition: color 0.15s ease;
     }
 
     .command-link:hover {
-      background: rgba(88, 166, 255, 0.12);
+      color: #79c0ff;
       text-decoration: underline;
     }
 
-    .command-link .copy-icon {
-      opacity: 0;
+    .copy-icon {
       font-size: 0.8rem;
-      transition: opacity 0.2s ease;
+      opacity: 0;
+      transform: scale(0.85);
+      transition: all 0.15s ease;
+      cursor: pointer;
     }
 
-    .command-link:hover .copy-icon {
-      opacity: 1;
+    .command-cell:hover .copy-icon {
+      opacity: 0.8;
+      transform: scale(1);
+    }
+
+    .copy-icon:hover {
+      opacity: 1 !important;
+      transform: scale(1.15) !important;
     }
 
     .time-cell {
       color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
       white-space: nowrap;
-      font-size: 0.88rem;
     }
 
     .duration-cell {
-      color: var(--text-main);
-      font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
-      font-size: 0.88rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
       white-space: nowrap;
     }
 
     .error-cell {
-      text-align: center;
       white-space: nowrap;
     }
 
     .action-cell {
-      text-align: center;
-      white-space: nowrap;
+      text-align: right;
+      padding-right: 1.25rem;
     }
 
+    /* Status Badges */
     .badge {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 0.2rem 0.65rem;
-      border-radius: 9999px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.78rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
       font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
     }
 
     .badge-success {
@@ -304,6 +313,39 @@
       background: var(--error-bg);
       color: var(--error);
       border: 1px solid rgba(248, 81, 73, 0.3);
+    }
+
+    /* PWD Badge */
+    .pwd-cell {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+    }
+
+    .pwd-badge {
+      display: inline-block;
+      max-width: 100%;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--accent);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      word-break: break-all;
+      user-select: text;
+    }
+
+    .pwd-badge:hover {
+      background: rgba(88, 166, 255, 0.12);
+      border-color: rgba(88, 166, 255, 0.35);
+      color: #79c0ff;
+    }
+
+    .pwd-badge.expanded {
+      background: rgba(88, 166, 255, 0.18);
+      border-color: var(--accent);
+      color: var(--text-main);
+      box-shadow: 0 0 10px rgba(88, 166, 255, 0.2);
     }
 
     /* Delete Button */
@@ -410,6 +452,9 @@
               <th class="th-error sortable" onclick="handleSort(3)" data-col="3">
                 <span class="th-content">Error code <span class="sort-icon">↕</span></span>
               </th>
+              <th class="th-pwd sortable" onclick="handleSort(4)" data-col="4">
+                <span class="th-content">$PWD <span class="sort-icon">↕</span></span>
+              </th>
               <th class="th-action">
                 <span class="th-content"></span>
               </th>
@@ -429,7 +474,12 @@
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -453,7 +503,12 @@
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -477,7 +532,12 @@
               <td class="error-cell">
                 <span class="badge badge-error">1</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -501,7 +561,12 @@
               <td class="error-cell">
                 <span class="badge badge-error">1</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -525,7 +590,12 @@
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -549,7 +619,12 @@
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -573,7 +648,12 @@
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -597,7 +677,12 @@
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -621,7 +706,12 @@
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -645,7 +735,12 @@
               <td class="error-cell">
                 <span class="badge badge-error">130</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -669,7 +764,12 @@
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -697,7 +797,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -721,7 +826,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -745,7 +855,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -769,7 +884,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -793,7 +913,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -817,7 +942,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -841,7 +971,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-error">127</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -865,7 +1000,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -888,7 +1028,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -911,7 +1056,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -934,7 +1084,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -957,7 +1112,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -980,7 +1140,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1003,7 +1168,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1026,7 +1196,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1049,7 +1224,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1072,7 +1252,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1095,7 +1280,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1118,7 +1308,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1141,7 +1336,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1164,7 +1364,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1187,7 +1392,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1210,7 +1420,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1233,7 +1448,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1256,7 +1476,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1279,7 +1504,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1302,7 +1532,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1325,7 +1560,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1348,7 +1588,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1371,7 +1616,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1394,7 +1644,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1417,7 +1672,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1440,7 +1700,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1463,7 +1728,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1486,7 +1756,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1509,7 +1784,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1532,7 +1812,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1555,7 +1840,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1578,7 +1868,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1601,7 +1896,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1624,7 +1924,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1647,7 +1952,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1670,7 +1980,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1693,7 +2008,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1716,7 +2036,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1739,7 +2064,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1762,7 +2092,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1785,7 +2120,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1808,7 +2148,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1831,7 +2176,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1854,7 +2204,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1877,7 +2232,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1900,7 +2260,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1923,7 +2288,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1946,7 +2316,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1969,7 +2344,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -1992,7 +2372,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2015,7 +2400,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2038,7 +2428,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2061,7 +2456,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2084,7 +2484,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2107,7 +2512,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2130,7 +2540,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2153,7 +2568,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2176,7 +2596,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2199,7 +2624,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2222,7 +2652,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2245,7 +2680,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2268,7 +2708,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2291,7 +2736,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2314,7 +2764,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2337,7 +2792,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2360,7 +2820,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2383,7 +2848,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2406,7 +2876,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2429,7 +2904,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2452,7 +2932,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2475,7 +2960,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2498,7 +2988,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2521,7 +3016,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2544,7 +3044,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2567,7 +3072,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2590,7 +3100,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2617,7 +3132,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2640,7 +3160,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-error">1</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2663,7 +3188,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-error">127</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2686,7 +3216,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2709,7 +3244,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-error">126</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2732,7 +3272,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2755,7 +3300,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2778,7 +3328,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2801,7 +3356,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2824,7 +3384,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-error">126</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2847,7 +3412,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-error">126</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2870,7 +3440,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2893,7 +3468,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2916,7 +3496,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2939,7 +3524,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2962,7 +3552,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -2985,7 +3580,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -3008,7 +3608,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -3031,7 +3636,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -3054,7 +3664,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -3077,7 +3692,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -3100,7 +3720,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -3123,7 +3748,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -3146,7 +3776,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -3169,7 +3804,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -3192,7 +3832,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -3215,7 +3860,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -3238,7 +3888,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -3261,7 +3916,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -3284,7 +3944,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -3307,7 +3972,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -3330,7 +4000,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -3353,7 +4028,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -3376,7 +4056,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -3399,7 +4084,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -3427,7 +4117,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -3451,7 +4146,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-error">130</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -3475,7 +4175,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-error">127</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -3503,7 +4208,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-success">0</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -3527,7 +4237,12 @@ git push -u origin main</span>
               <td class="error-cell">
                 <span class="badge badge-error">130</span>
               </td>
-              <td class="action-cell">
+                            <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="-" data-short="-" title="Click to reveal full path">
+                  -
+                </span>
+              </td>
+<td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -3558,7 +4273,7 @@ git push -u origin main</span>
 
   <script>
     let currentSortCol = 1; // Default: Time
-    let currentSortDir = 'desc'; // Default: Chronological order (earliest first)
+    let currentSortDir = 'desc'; // Default: most recent first (latest at top)
 
     function copyCommand(element, event) {
       if (event) {
@@ -3653,13 +4368,37 @@ git push -u origin main</span>
       }
     }
 
+    function togglePwd(element, event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      const isExpanded = element.classList.toggle('expanded');
+      const full = element.getAttribute('data-full') || '';
+      const short = element.getAttribute('data-short') || '';
+      element.textContent = isExpanded ? full : short;
+      element.title = isExpanded ? "Click to collapse path" : "Click to reveal full path";
+    }
+
+    function formatPwdThumbnail(fullPath) {
+      if (!fullPath || fullPath === '-') return { short: '-', full: '-' };
+      const clean = fullPath.replace(/[/\\]+$/, '');
+      if (!clean) return { short: '/', full: '/' };
+      const parts = clean.split(/[/\\]/).filter(Boolean);
+      if (parts.length <= 3) {
+        return { short: clean, full: fullPath };
+      }
+      return { short: '…/' + parts.slice(-3).join('/'), full: fullPath };
+    }
+
     function filterRows() {
       const query = document.getElementById('searchInput').value.toLowerCase();
       const rows = document.querySelectorAll('#logBody tr.log-row');
       rows.forEach(row => {
         const cmd = row.querySelector('.command-cell')?.innerText.toLowerCase() || '';
         const time = row.querySelector('.time-cell')?.innerText.toLowerCase() || '';
-        if (cmd.includes(query) || time.includes(query)) {
+        const pwd = row.querySelector('.pwd-badge')?.getAttribute('data-full')?.toLowerCase() || '';
+        if (cmd.includes(query) || time.includes(query) || pwd.includes(query)) {
           row.style.display = '';
         } else {
           row.style.display = 'none';
@@ -3667,7 +4406,6 @@ git push -u origin main</span>
       });
     }
 
-    // Parse duration strings (e.g. 0.042s, 1m 24s, 2h 10m 05s) to seconds
     function parseDuration(text) {
       let total = 0;
       const h = text.match(/(\d+)h/);
@@ -3684,8 +4422,7 @@ git push -u origin main</span>
         currentSortDir = currentSortDir === 'asc' ? 'desc' : 'asc';
       } else {
         currentSortCol = colIndex;
-        // Default time to asc (chronological), others to asc
-        currentSortDir = 'asc';
+        currentSortDir = colIndex === 1 ? 'desc' : 'asc';
       }
       applySort();
     }
@@ -3713,6 +4450,10 @@ git push -u origin main</span>
           valA = parseInt(a.querySelector('.error-cell')?.innerText.trim() || '0', 10);
           valB = parseInt(b.querySelector('.error-cell')?.innerText.trim() || '0', 10);
           return currentSortDir === 'asc' ? valA - valB : valB - valA;
+        } else if (currentSortCol === 4) { // $PWD
+          valA = a.querySelector('.pwd-badge')?.getAttribute('data-full')?.toLowerCase() || '';
+          valB = b.querySelector('.pwd-badge')?.getAttribute('data-full')?.toLowerCase() || '';
+          return currentSortDir === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
         }
         return 0;
       });
@@ -3735,7 +4476,6 @@ git push -u origin main</span>
       });
     }
 
-    // Auto-update support when connected to server
     function pollRecentEntries() {
       fetch('/api/recent')
         .then(res => res.json())
@@ -3768,6 +4508,7 @@ git push -u origin main</span>
 
       const isSuccess = String(entry.exit_code) === '0';
       const badgeClass = isSuccess ? 'badge-success' : 'badge-error';
+      const pwdInfo = formatPwdThumbnail(entry.pwd || '');
 
       tr.innerHTML = `
         <td class="command-cell">
@@ -3780,6 +4521,11 @@ git push -u origin main</span>
         <td class="duration-cell">${escapeHtml(entry.duration)}</td>
         <td class="error-cell">
           <span class="badge ${badgeClass}">${escapeHtml(String(entry.exit_code))}</span>
+        </td>
+        <td class="pwd-cell">
+          <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="${escapeHtml(pwdInfo.full)}" data-short="${escapeHtml(pwdInfo.short)}" title="Click to reveal full path">
+            ${escapeHtml(pwdInfo.short)}
+          </span>
         </td>
         <td class="action-cell">
           <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
@@ -3807,8 +4553,11 @@ git push -u origin main</span>
 
     document.addEventListener('DOMContentLoaded', () => {
       updateEntryCount();
-      applySort(); // Apply default chronological sort
+      applySort();
+
       if (window.location.protocol.startsWith('http')) {
+        const loc = document.getElementById('footerLocation');
+        if (loc) loc.textContent = `Living at ${window.location.host}`;
         setInterval(pollRecentEntries, 2000);
       }
     });

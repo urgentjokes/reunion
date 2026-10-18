@@ -57,6 +57,7 @@ _gohi_preexec() {
 
     if [ -z "$_gohi_cmd" ]; then
         _gohi_cmd="$BASH_COMMAND"
+        _gohi_pwd="$PWD"
         _gohi_time=$(date "+%Y-%m-%d %H:%M:%S")
         if [ -n "$EPOCHREALTIME" ]; then
             _gohi_start_time="$EPOCHREALTIME"
@@ -101,16 +102,18 @@ entry = {
     'command': sys.argv[1],
     'time': sys.argv[2],
     'duration': sys.argv[3],
-    'exit_code': int(sys.argv[4])
+    'exit_code': int(sys.argv[4]),
+    'pwd': sys.argv[5] if len(sys.argv) > 5 else ''
 }
 spool = os.path.expanduser('~/.gohi/spool.log')
 with open(spool, 'a', encoding='utf-8') as f:
     f.write(json.dumps(entry) + '\n')
-" "$_gohi_cmd" "$_gohi_time" "$duration_str" "$exit_code" 2>/dev/null
+" "$_gohi_cmd" "$_gohi_time" "$duration_str" "$exit_code" "$_gohi_pwd" 2>/dev/null
 
         unset _gohi_cmd
         unset _gohi_start_time
         unset _gohi_time
+        unset _gohi_pwd
     fi
 
     _gohi_set_prompt

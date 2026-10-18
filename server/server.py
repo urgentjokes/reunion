@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-go/hi Raspberry Pi Server
+reunion Logging Server
 Serves the "Hello–I'm Home" web page, appends incoming terminal interaction logs
-chronologically directly into the HTML file, and supports deleting unwanted commands.
+directly into the HTML file, and supports deleting unwanted commands.
 """
 
 import sys
@@ -26,8 +26,20 @@ recent_cache = []
 def escape(s):
     return html.escape(str(s) if s is not None else "")
 
+def get_pwd_thumbnail(full_path):
+    if not full_path or full_path == "-":
+        return "-", "-"
+    clean = str(full_path).rstrip("/\\")
+    if not clean:
+        return "/", "/"
+    parts = [p for p in re.split(r'[/\\]', clean) if p]
+    if len(parts) <= 3:
+        return clean, str(full_path)
+    short = "…/" + "/".join(parts[-3:])
+    return short, str(full_path)
+
 def append_to_html(entry):
-    """Safely appends a new table row chronologically right before <!-- GOHI_ENTRIES_END -->."""
+    """Safely appends a new table row right after <!-- GOHI_ENTRIES_START -->."""
     with file_lock:
         if not os.path.exists(INDEX_FILE):
             return False
@@ -37,7 +49,6 @@ def append_to_html(entry):
 
         marker = "<!-- GOHI_ENTRIES_START -->"
         if marker not in content:
-            # Fallback if marker is missing
             marker = '<tbody id="logBody">'
 
         is_success = str(entry.get("exit_code", "0")) == "0"
@@ -47,6 +58,8 @@ def append_to_html(entry):
         duration = entry.get("duration", "")
         exit_code = entry.get("exit_code", 0)
         entry_id = entry.get("id", str(int(time.time() * 1000)))
+        pwd = entry.get("pwd", "")
+        pwd_short, pwd_full = get_pwd_thumbnail(pwd)
 
         new_row = f'''
             <tr class="log-row" data-id="{escape(entry_id)}">
@@ -60,6 +73,11 @@ def append_to_html(entry):
               <td class="duration-cell">{escape(duration)}</td>
               <td class="error-cell">
                 <span class="badge {badge_class}">{escape(exit_code)}</span>
+              </td>
+              <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="{escape(pwd_full)}" data-short="{escape(pwd_short)}" title="Click to reveal full path">
+                  {escape(pwd_short)}
+                </span>
               </td>
               <td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
@@ -241,13 +259,13 @@ class GoHiHandler(BaseHTTPRequestHandler):
 
     def log_message(self, format, *args):
         # Concise logging
-        sys.stderr.write(f"[go/hi server] {self.address_string()} - {format % args}\n")
+        sys.stderr.write(f"[reunion server] {self.address_string()} - {format % args}\n")
 
 def run_server(port=DEFAULT_PORT):
     load_initial_cache()
     server_address = ("", port)
     httpd = HTTPServer(server_address, GoHiHandler)
-    print(f"🚀 go/hi Raspberry Pi Server running at http://0.0.0.0:{port}")
+    print(f"🚀 reunion Server running at http://0.0.0.0:{port}")
     print(f"📄 Serving and appending directly to: {INDEX_FILE}")
     try:
         httpd.serve_forever()
@@ -256,7 +274,7 @@ def run_server(port=DEFAULT_PORT):
         httpd.server_close()
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="go/hi Raspberry Pi Server")
+    parser = argparse.ArgumentParser(description="reunion Logging Server")
     parser.add_argument("--port", type=int, default=int(os.environ.get("GOHI_PORT", DEFAULT_PORT)), help="Port to listen on")
     args = parser.parse_args()
     run_server(args.port)

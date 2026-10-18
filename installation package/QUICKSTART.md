@@ -237,9 +237,10 @@ journalctl -u gohi-server -f
 Across all three use cases, you get the same clean, responsive dark-mode interface:
 
 - **📋 Click-to-Copy**: Click any command link to copy the exact text to your clipboard with a confirmation toast.
+- **📂 $PWD Directory Capture & Click-to-Reveal**: Automatically captures the directory where the command was executed. Displays a 3-level directory thumbnail (e.g., `…/developer-stuff/go-hi/installation package`). Clicking the thumbnail toggles and reveals the full path, and clicking again collapses it back.
 - **🗑️ Delete Button**: Click the trash can icon on any row to instantly remove unwanted commands or sensitive entries. In server mode, deletions sync to the server.
-- **↕️ Sortable Columns**: Click **Command**, **Time**, **Duration**, or **Error code** headers to sort. Defaults to **most recent commands at the top**.
-- **🔍 Real-Time Filter**: Type in the search box to filter commands and timestamps in real time.
+- **↕️ Sortable Columns**: Click **Command**, **Time**, **Duration**, **Error code**, or **$PWD** headers to sort. Defaults to **most recent commands at the top**.
+- **🔍 Real-Time Filter**: Type in the search box to filter commands, timestamps, and directories in real time.
 - **⚡ Live Auto-Poll**: In server mode, the dashboard polls every 2 seconds to display commands as they finish.
 
 ---

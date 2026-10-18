@@ -110,8 +110,10 @@ The server runs on your Raspberry Pi at `192.168.0.40:8003` as a `systemd` servi
    > 
    ```
 5. **"Hello–I’m Home" Web Dashboard**:
-   - 4 required columns: **Command**, **Time**, **Duration**, **Error code**.
+   - 5 columns: **Command**, **Time**, **Duration**, **Error code**, and **$PWD**.
+   - **$PWD Directory Thumbnail**: Displays 3 levels of directories upward (counting the current directory) as a clickable thumbnail. Clicking reveals the entire full path.
    - Clickable commands with instant copy-to-clipboard and toast confirmation.
+   - One-click deletion icon for removing unwanted commands.
    - Color-coded badges for error codes (`0` is green, non-zero is red).
    - Instant search/filter box and live auto-updating.
    - Pure HTML/CSS/JS with zero runtime dependencies.

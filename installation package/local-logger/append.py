@@ -7,6 +7,7 @@ Auto-initializes the HTML file from the template if it does not yet exist.
 
 import sys
 import os
+import re
 import html
 
 if len(sys.argv) < 7:
@@ -18,6 +19,19 @@ duration = sys.argv[3]
 exit_code = sys.argv[4]
 html_path = sys.argv[5]
 entry_id = sys.argv[6]
+pwd = sys.argv[7] if len(sys.argv) > 7 else ""
+
+def get_pwd_thumbnail(full_path):
+    if not full_path or full_path == "-":
+        return "-", "-"
+    clean = str(full_path).rstrip("/\\")
+    if not clean:
+        return "/", "/"
+    parts = [p for p in re.split(r'[/\\]', clean) if p]
+    if len(parts) <= 3:
+        return clean, str(full_path)
+    short = "…/" + "/".join(parts[-3:])
+    return short, str(full_path)
 
 # Auto-initialize target HTML file if missing
 if not os.path.exists(html_path):
@@ -48,6 +62,9 @@ try:
     dur_esc = html.escape(duration)
     code_esc = html.escape(str(exit_code))
     eid_esc = html.escape(str(entry_id))
+    pwd_short, pwd_full = get_pwd_thumbnail(pwd)
+    pwd_short_esc = html.escape(pwd_short)
+    pwd_full_esc = html.escape(pwd_full)
 
     new_row = f'''            <tr class="log-row" data-id="{eid_esc}">
               <td class="command-cell">
@@ -60,6 +77,11 @@ try:
               <td class="duration-cell">{dur_esc}</td>
               <td class="error-cell">
                 <span class="badge {badge_class}">{code_esc}</span>
+              </td>
+              <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="{pwd_full_esc}" data-short="{pwd_short_esc}" title="Click to reveal full path">
+                  {pwd_short_esc}
+                </span>
               </td>
               <td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">

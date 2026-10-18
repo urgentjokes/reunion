@@ -47,6 +47,7 @@ _gohi_set_prompt() {
 # 3. Capture command at execution start
 _gohi_preexec() {
     _gohi_cmd="$1"
+    _gohi_pwd="$PWD"
     if (( $+EPOCHREALTIME )); then
         _gohi_start_time=$EPOCHREALTIME
     else
@@ -94,14 +95,19 @@ _gohi_precmd() {
         cmd_esc="${cmd_esc//$'\r'/\\r}"
         cmd_esc="${cmd_esc//$'\t'/\\t}"
 
+        local pwd_esc="${_gohi_pwd//\\/\\\\}"
+        pwd_esc="${pwd_esc//\"/\\\"}"
+        pwd_esc="${pwd_esc//$'\n'/\\n}"
+
         # Fast non-blocking write to local spool
         mkdir -p "$GOHI_SPOOL_DIR"
-        printf '{"command":"%s","time":"%s","duration":"%s","exit_code":%d}\n' \
-            "$cmd_esc" "$_gohi_time" "$duration_str" "$exit_code" >> "$GOHI_SPOOL_FILE" 2>/dev/null
+        printf '{"command":"%s","time":"%s","duration":"%s","exit_code":%d,"pwd":"%s"}\n' \
+            "$cmd_esc" "$_gohi_time" "$duration_str" "$exit_code" "$pwd_esc" >> "$GOHI_SPOOL_FILE" 2>/dev/null
 
         unset _gohi_cmd
         unset _gohi_start_time
         unset _gohi_time
+        unset _gohi_pwd
     fi
 
     _gohi_set_prompt

@@ -154,10 +154,11 @@
     .sort-icon { font-size: 0.8rem; opacity: 0.5; transition: opacity 0.15s ease; }
     th.sorted-asc .sort-icon, th.sorted-desc .sort-icon { opacity: 1; color: var(--accent); }
 
-    th.th-command { width: 52%; }
-    th.th-time { width: 20%; }
-    th.th-duration { width: 14%; }
-    th.th-error { width: 10%; }
+    th.th-command { width: 38%; }
+    th.th-time { width: 17%; }
+    th.th-duration { width: 11%; }
+    th.th-error { width: 8%; }
+    th.th-pwd { width: 22%; }
     th.th-action { width: 4%; text-align: right; }
 
     tbody tr {
@@ -249,6 +250,39 @@
       background: var(--error-bg);
       color: var(--error);
       border: 1px solid rgba(248, 81, 73, 0.3);
+    }
+
+    /* PWD Badge */
+    .pwd-cell {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+    }
+
+    .pwd-badge {
+      display: inline-block;
+      max-width: 100%;
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--accent);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      word-break: break-all;
+      user-select: text;
+    }
+
+    .pwd-badge:hover {
+      background: rgba(88, 166, 255, 0.12);
+      border-color: rgba(88, 166, 255, 0.35);
+      color: #79c0ff;
+    }
+
+    .pwd-badge.expanded {
+      background: rgba(88, 166, 255, 0.18);
+      border-color: var(--accent);
+      color: var(--text-main);
+      box-shadow: 0 0 10px rgba(88, 166, 255, 0.2);
     }
 
     .delete-btn {
@@ -347,6 +381,9 @@
               <th class="th-error sortable" onclick="handleSort(3)" data-col="3">
                 <span class="th-content">Error code <span class="sort-icon">↕</span></span>
               </th>
+              <th class="th-pwd sortable" onclick="handleSort(4)" data-col="4">
+                <span class="th-content">$PWD <span class="sort-icon">↕</span></span>
+              </th>
               <th class="th-action">
                 <span class="th-content"></span>
               </th>
@@ -441,13 +478,37 @@
       if (countSpan) countSpan.textContent = `${rows.length} ${rows.length === 1 ? 'entry' : 'entries'}`;
     }
 
+    function togglePwd(element, event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      const isExpanded = element.classList.toggle('expanded');
+      const full = element.getAttribute('data-full') || '';
+      const short = element.getAttribute('data-short') || '';
+      element.textContent = isExpanded ? full : short;
+      element.title = isExpanded ? "Click to collapse path" : "Click to reveal full path";
+    }
+
+    function formatPwdThumbnail(fullPath) {
+      if (!fullPath || fullPath === '-') return { short: '-', full: '-' };
+      const clean = fullPath.replace(/[/\\]+$/, '');
+      if (!clean) return { short: '/', full: '/' };
+      const parts = clean.split(/[/\\]/).filter(Boolean);
+      if (parts.length <= 3) {
+        return { short: clean, full: fullPath };
+      }
+      return { short: '…/' + parts.slice(-3).join('/'), full: fullPath };
+    }
+
     function filterRows() {
       const query = document.getElementById('searchInput').value.toLowerCase();
       const rows = document.querySelectorAll('#logBody tr.log-row');
       rows.forEach(row => {
         const cmd = row.querySelector('.command-cell')?.innerText.toLowerCase() || '';
         const time = row.querySelector('.time-cell')?.innerText.toLowerCase() || '';
-        if (cmd.includes(query) || time.includes(query)) row.style.display = '';
+        const pwd = row.querySelector('.pwd-badge')?.getAttribute('data-full')?.toLowerCase() || '';
+        if (cmd.includes(query) || time.includes(query) || pwd.includes(query)) row.style.display = '';
         else row.style.display = 'none';
       });
     }
@@ -496,6 +557,10 @@
           valA = parseInt(a.querySelector('.error-cell')?.innerText.trim() || '0', 10);
           valB = parseInt(b.querySelector('.error-cell')?.innerText.trim() || '0', 10);
           return currentSortDir === 'asc' ? valA - valB : valB - valA;
+        } else if (currentSortCol === 4) {
+          valA = a.querySelector('.pwd-badge')?.getAttribute('data-full')?.toLowerCase() || '';
+          valB = b.querySelector('.pwd-badge')?.getAttribute('data-full')?.toLowerCase() || '';
+          return currentSortDir === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
         }
         return 0;
       });

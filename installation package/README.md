@@ -31,9 +31,10 @@
 
 - ⚡ **Zero-Latency Shell Hooks**: Lightweight preexec/precmd hooks for **Zsh** and **Bash** that never slow down your prompt.
 - 🏠 **"Hello–I'm Home" Web Dashboard**: Clean, responsive dark-mode UI.
+- 📂 **$PWD Directory Capture**: Captures the directory for every command, displaying a 3-level thumbnail (e.g. `…/developer-stuff/go-hi/installation package`). Click the thumbnail to reveal or collapse the full path.
 - 📋 **Click-to-Copy**: Click any command to copy it immediately to your clipboard.
 - 🗑️ **One-Click Deletion**: Delete unwanted commands or typos directly from the dashboard.
-- ↕️ **Sortable & Filterable**: Sort dynamically by Command, Time, Duration, or Error code. Defaults to **most recent first**. Real-time instant search filter.
+- ↕️ **Sortable & Filterable**: Sort dynamically by Command, Time, Duration, Error code, or $PWD. Defaults to **most recent first**. Real-time instant search filter across commands, times, and paths.
 - 🛡️ **Offline Queue**: Safe spool buffering ensures zero data loss during network hiccups.
 
 ---

@@ -11,6 +11,7 @@ import sys
 import time
 import json
 import html
+import re
 import signal
 import urllib.request
 import urllib.error
@@ -83,6 +84,18 @@ def handle_signal(sig, frame):
 signal.signal(signal.SIGTERM, handle_signal)
 signal.signal(signal.SIGINT, handle_signal)
 
+def get_pwd_thumbnail(full_path):
+    if not full_path or full_path == "-":
+        return "-", "-"
+    clean = str(full_path).rstrip("/\\")
+    if not clean:
+        return "/", "/"
+    parts = [p for p in re.split(r'[/\\]', clean) if p]
+    if len(parts) <= 3:
+        return clean, str(full_path)
+    short = "…/" + "/".join(parts[-3:])
+    return short, str(full_path)
+
 def append_to_local_html(entry):
     """Appends interaction entry to local backup HTML file if enabled."""
     if not ENABLE_LOCAL_BACKUP:
@@ -111,6 +124,8 @@ def append_to_local_html(entry):
         duration = html.escape(str(entry.get("duration", "")))
         exit_code = html.escape(str(entry.get("exit_code", 0)))
         entry_id = html.escape(str(entry.get("id", int(time.time() * 1000))))
+        pwd = entry.get("pwd", "")
+        pwd_short, pwd_full = get_pwd_thumbnail(pwd)
 
         new_row = f'''
             <tr class="log-row" data-id="{entry_id}">
@@ -124,6 +139,11 @@ def append_to_local_html(entry):
               <td class="duration-cell">{duration}</td>
               <td class="error-cell">
                 <span class="badge {badge_class}">{exit_code}</span>
+              </td>
+              <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="{html.escape(pwd_full)}" data-short="{html.escape(pwd_short)}" title="Click to reveal full path">
+                  {html.escape(pwd_short)}
+                </span>
               </td>
               <td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">

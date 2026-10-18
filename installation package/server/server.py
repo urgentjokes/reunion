@@ -26,6 +26,18 @@ recent_cache = []
 def escape(s):
     return html.escape(str(s) if s is not None else "")
 
+def get_pwd_thumbnail(full_path):
+    if not full_path or full_path == "-":
+        return "-", "-"
+    clean = str(full_path).rstrip("/\\")
+    if not clean:
+        return "/", "/"
+    parts = [p for p in re.split(r'[/\\]', clean) if p]
+    if len(parts) <= 3:
+        return clean, str(full_path)
+    short = "…/" + "/".join(parts[-3:])
+    return short, str(full_path)
+
 def append_to_html(entry):
     """Safely appends a new table row right after <!-- GOHI_ENTRIES_START -->."""
     with file_lock:
@@ -46,6 +58,8 @@ def append_to_html(entry):
         duration = entry.get("duration", "")
         exit_code = entry.get("exit_code", 0)
         entry_id = entry.get("id", str(int(time.time() * 1000)))
+        pwd = entry.get("pwd", "")
+        pwd_short, pwd_full = get_pwd_thumbnail(pwd)
 
         new_row = f'''
             <tr class="log-row" data-id="{escape(entry_id)}">
@@ -59,6 +73,11 @@ def append_to_html(entry):
               <td class="duration-cell">{escape(duration)}</td>
               <td class="error-cell">
                 <span class="badge {badge_class}">{escape(exit_code)}</span>
+              </td>
+              <td class="pwd-cell">
+                <span class="pwd-badge" onclick="togglePwd(this, event)" data-full="{escape(pwd_full)}" data-short="{escape(pwd_short)}" title="Click to reveal full path">
+                  {escape(pwd_short)}
+                </span>
               </td>
               <td class="action-cell">
                 <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
