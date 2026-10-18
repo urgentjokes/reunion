@@ -1,0 +1,22 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# Local configuration overrides (keep config.example.env in git)
+config.env
+
+# Logs and runtime artifacts
+*.log
+*.pid
