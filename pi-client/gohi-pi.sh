@@ -24,7 +24,7 @@ _gohi_pi_set_prompt() {
     esac
 }
 
-# 3. Background append function
+# 3. Background append function (detached subshell to suppress job notifications)
 _gohi_pi_append() {
     local cmd="$1"
     local time_str="$2"
@@ -33,67 +33,7 @@ _gohi_pi_append() {
     local target_html="$5"
     local entry_id="$6"
 
-    python3 -c "
-import os, sys, html
-
-cmd = sys.argv[1]
-time_str = sys.argv[2]
-duration = sys.argv[3]
-exit_code = sys.argv[4]
-html_path = sys.argv[5]
-entry_id = sys.argv[6]
-
-if not os.path.exists(html_path):
-    sys.exit(0)
-
-try:
-    with open(html_path, 'r', encoding='utf-8') as f:
-        content = f.read()
-
-    marker = '<!-- GOHI_ENTRIES_END -->'
-    if marker not in content:
-        marker = '</tbody>'
-
-    is_success = str(exit_code) == '0'
-    badge_class = 'badge-success' if is_success else 'badge-error'
-    cmd_esc = html.escape(cmd)
-    time_esc = html.escape(time_str)
-    dur_esc = html.escape(duration)
-    code_esc = html.escape(str(exit_code))
-    eid_esc = html.escape(str(entry_id))
-
-    new_row = f'''            <tr class=\"log-row\" data-id=\"{eid_esc}\">
-              <td class=\"command-cell\">
-                <a href=\"#\" class=\"command-link\" onclick=\"copyCommand(this, event)\" data-command=\"{cmd_esc}\">
-                  <span>{cmd_esc}</span>
-                  <span class=\"copy-icon\">📋</span>
-                </a>
-              </td>
-              <td class=\"time-cell\">{time_esc}</td>
-              <td class=\"duration-cell\">{dur_esc}</td>
-              <td class=\"error-cell\">
-                <span class=\"badge {badge_class}\">{code_esc}</span>
-              </td>
-              <td class=\"action-cell\">
-                <button class=\"delete-btn\" onclick=\"deleteEntry(this, event)\" title=\"Delete command\" aria-label=\"Delete\">
-                  <svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\">
-                    <polyline points=\"3 6 5 6 21 6\"></polyline>
-                    <path d=\"M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2\"></path>
-                    <line x1=\"10\" y1=\"11\" x2=\"10\" y2=\"17\"></line>
-                    <line x1=\"14\" y1=\"11\" x2=\"14\" y2=\"17\"></line>
-                  </svg>
-                </button>
-              </td>
-            </tr>\n'''
-
-    parts = content.split(marker, 1)
-    if len(parts) == 2:
-        new_content = parts[0] + new_row + marker + parts[1]
-        with open(html_path, 'w', encoding='utf-8') as f:
-            f.write(new_content)
-except Exception:
-    pass
-" "$cmd" "$time_str" "$duration" "$exit_code" "$target_html" "$entry_id" >/dev/null 2>&1 &
+    ( /usr/bin/python3 "$GOHI_PI_DIR/append.py" "$cmd" "$time_str" "$duration" "$exit_code" "$target_html" "$entry_id" >/dev/null 2>&1 & )
 }
 
 # 4. Shell Specific Hooks
