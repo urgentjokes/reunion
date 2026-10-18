@@ -20,3 +20,8 @@ config.env
 # Logs and runtime artifacts
 *.log
 *.pid
+
+# Editor backup / swap files
+*.swp
+*.swo
+*~
