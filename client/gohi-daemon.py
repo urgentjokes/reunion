@@ -64,9 +64,9 @@ def append_to_local_html(entry):
         with open(LOCAL_HTML_FILE, "r", encoding="utf-8") as f:
             content = f.read()
 
-        marker = "<!-- GOHI_ENTRIES_START -->"
+        marker = "<!-- GOHI_ENTRIES_END -->"
         if marker not in content:
-            marker = '<tbody id="logBody">'
+            marker = '</tbody>'
 
         is_success = str(entry.get("exit_code", "0")) == "0"
         badge_class = "badge-success" if is_success else "badge-error"
@@ -89,11 +89,21 @@ def append_to_local_html(entry):
               <td class="error-cell">
                 <span class="badge {badge_class}">{exit_code}</span>
               </td>
-            </tr>'''
+              <td class="action-cell">
+                <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                  </svg>
+                </button>
+              </td>
+            </tr>\n'''
 
         parts = content.split(marker, 1)
         if len(parts) == 2:
-            new_content = parts[0] + marker + new_row + parts[1]
+            new_content = parts[0] + new_row + marker + parts[1]
             with open(LOCAL_HTML_FILE, "w", encoding="utf-8") as f:
                 f.write(new_content)
     except Exception as e:

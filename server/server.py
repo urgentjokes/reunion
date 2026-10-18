@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """
 go/hi Raspberry Pi Server
-Serves the "Hello–I'm Home" web page and appends incoming terminal interaction logs directly into the HTML file.
+Serves the "Hello–I'm Home" web page, appends incoming terminal interaction logs
+chronologically directly into the HTML file, and supports deleting unwanted commands.
 """
 
 import sys
 import os
+import re
 import json
 import time
 import html
@@ -25,7 +27,7 @@ def escape(s):
     return html.escape(str(s) if s is not None else "")
 
 def append_to_html(entry):
-    """Safely inserts a new table row into index.html immediately after <!-- GOHI_ENTRIES_START -->."""
+    """Safely appends a new table row chronologically right before <!-- GOHI_ENTRIES_END -->."""
     with file_lock:
         if not os.path.exists(INDEX_FILE):
             return False
@@ -33,10 +35,10 @@ def append_to_html(entry):
         with open(INDEX_FILE, "r", encoding="utf-8") as f:
             content = f.read()
 
-        marker = "<!-- GOHI_ENTRIES_START -->"
+        marker = "<!-- GOHI_ENTRIES_END -->"
         if marker not in content:
             # Fallback if marker is missing
-            marker = '<tbody id="logBody">'
+            marker = "</tbody>"
 
         is_success = str(entry.get("exit_code", "0")) == "0"
         badge_class = "badge-success" if is_success else "badge-error"
@@ -59,11 +61,21 @@ def append_to_html(entry):
               <td class="error-cell">
                 <span class="badge {badge_class}">{escape(exit_code)}</span>
               </td>
-            </tr>'''
+              <td class="action-cell">
+                <button class="delete-btn" onclick="deleteEntry(this, event)" title="Delete command" aria-label="Delete">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                  </svg>
+                </button>
+              </td>
+            </tr>\n'''
 
         parts = content.split(marker, 1)
         if len(parts) == 2:
-            new_content = parts[0] + marker + new_row + parts[1]
+            new_content = parts[0] + new_row + marker + parts[1]
             with open(INDEX_FILE, "w", encoding="utf-8") as f:
                 f.write(new_content)
 
@@ -74,9 +86,46 @@ def append_to_html(entry):
         except Exception as e:
             print(f"[Error writing jsonl]: {e}", file=sys.stderr)
 
-        recent_cache.insert(0, entry)
+        recent_cache.append(entry)
         if len(recent_cache) > 200:
-            recent_cache.pop()
+            recent_cache.pop(0)
+
+        return True
+
+def delete_from_html(entry_id):
+    """Safely removes a table row by data-id from index.html and cache."""
+    with file_lock:
+        if not os.path.exists(INDEX_FILE):
+            return False
+
+        with open(INDEX_FILE, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        pattern = rf'[ \t]*<tr class="log-row" data-id="{re.escape(str(entry_id))}">.*?</tr>\n?'
+        new_content = re.sub(pattern, "", content, flags=re.DOTALL)
+        if new_content != content:
+            with open(INDEX_FILE, "w", encoding="utf-8") as f:
+                f.write(new_content)
+
+        # Update cache
+        global recent_cache
+        recent_cache = [e for e in recent_cache if str(e.get("id")) != str(entry_id)]
+
+        # Update jsonl log
+        if os.path.exists(LOG_FILE):
+            try:
+                with open(LOG_FILE, "r", encoding="utf-8") as f:
+                    lines = f.readlines()
+                with open(LOG_FILE, "w", encoding="utf-8") as f:
+                    for line in lines:
+                        try:
+                            item = json.loads(line)
+                            if str(item.get("id")) != str(entry_id):
+                                f.write(line)
+                        except Exception:
+                            f.write(line)
+            except Exception as e:
+                print(f"[Error updating jsonl]: {e}", file=sys.stderr)
 
         return True
 
@@ -88,7 +137,7 @@ def load_initial_cache():
                 for line in lines[-200:]:
                     line = line.strip()
                     if line:
-                        recent_cache.insert(0, json.loads(line))
+                        recent_cache.append(json.loads(line))
         except Exception:
             pass
 
@@ -121,7 +170,7 @@ class GoHiHandler(BaseHTTPRequestHandler):
             return
 
         if path == "/api/recent":
-            data = json.dumps(recent_cache[:50]).encode("utf-8")
+            data = json.dumps(recent_cache[-50:]).encode("utf-8")
             self.send_response(200)
             self.send_header("Content-Type", "application/json")
             self.send_header("Content-Length", str(len(data)))
@@ -163,6 +212,29 @@ class GoHiHandler(BaseHTTPRequestHandler):
                 self.wfile.write(resp)
             except Exception as e:
                 self.send_error(400, f"Failed to log entry: {e}")
+            return
+
+        if path in ("/delete", "/api/delete"):
+            try:
+                content_length = int(self.headers.get("Content-Length", 0))
+                body = self.rfile.read(content_length).decode("utf-8")
+                req_data = json.loads(body)
+                entry_id = req_data.get("id")
+                if entry_id:
+                    delete_from_html(entry_id)
+                    resp = json.dumps({"status": "deleted", "id": entry_id}).encode("utf-8")
+                    self.send_response(200)
+                    self.send_header("Content-Type", "application/json")
+                    self.send_header("Content-Length", str(len(resp)))
+                    self.send_cors_headers()
+                    self.end_headers()
+                    self.wfile.write(resp)
+                    return
+                else:
+                    self.send_error(400, "Missing id in delete request")
+                    return
+            except Exception as e:
+                self.send_error(400, f"Failed to delete entry: {e}")
             return
 
         self.send_error(404, "Endpoint not found")
